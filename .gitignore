@@ -1,0 +1,11 @@
+*.png
+saved_models
+logs
+outputs
+data
+!data/newdata_cls_trainvaltest.json
+*.pth
+__pycache__
+split1
+*.pkl
+identity.yaml
