@@ -9,3 +9,6 @@ __pycache__
 split1
 *.pkl
 identity.yaml
+!data/newdata_cls_train_vidsplit.json 
+!data/newdata_cls_val_vidsplit.json
+!data/newdata_cls_test_vidsplit.json  
