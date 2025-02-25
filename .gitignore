@@ -2,7 +2,7 @@
 saved_models
 logs
 outputs
-data
+data/*
 !data/newdata_cls_trainvaltest.json
 *.pth
 __pycache__
