@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 from torchvision import transforms
 from PIL import Image
 import math
@@ -96,6 +97,25 @@ class Trainer:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_loss, accuracy, filename=view+'_ckpt.pth')
                 # Save the best model
                 self.best_accuracy = save_best_model(self.model, accuracy, self.best_accuracy, filename=view+'_best_model.pth')
+
+        # Plot metrics after training
+        epochs = list(range(num_epoch))
+        plt.figure(figsize=(12, 5))
+        plt.subplot(1, 2, 1)
+        plt.plot(epochs, self.epoch_losses, label='Train Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.title('Training Loss over Epochs')
+        plt.legend()
+        plt.subplot(1, 2, 2)
+        plt.plot(epochs, self.epoch_accuracies, label='Eval Accuracy')
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy')
+        plt.title('Evaluation Accuracy over Epochs')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(view+'_training_metrics.png')
+        plt.show()
     
     def load_model(self, ckpt):
         try:

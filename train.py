@@ -3,6 +3,9 @@ import argparse
 
 from PIL import Image
 import torch
+import timm 
+import torch.nn as nn
+
 from torch.optim import AdamW
 from transformers import ResNetForImageClassification
 
@@ -29,10 +32,14 @@ def main(train_json_data, eval_json_data, img_dir):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50')
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(start_dim=1, end_dim=-1),
-        torch.nn.Linear(in_features=2048, out_features=8, bias=True))
+    # model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50')
+    # model.classifier = torch.nn.Sequential(
+        # torch.nn.Flatten(start_dim=1, end_dim=-1),
+        # torch.nn.Linear(in_features=2048, out_features=8, bias=True))
+    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
+    in_features = model.head.in_features
+    num_classes = 8
+    model.head = nn.Linear(in_features, num_classes)
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
@@ -41,7 +48,8 @@ def main(train_json_data, eval_json_data, img_dir):
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
 
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
-
+    
+    # img_dir relative path should be "/mydata/vocim/zachary/data/cropped"
     trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
     if os.path.exists('top_colorid_best_model.pth'):
         trainer.load_model('top_colorid_best_model.pth')

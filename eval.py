@@ -1,12 +1,14 @@
 from PIL import Image
 import torch
+import torch.nn as nn
+import timm 
 from torch.optim import AdamW
 from transformers import ResNetForImageClassification
 from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 
-def main(eval_json_data, img_dir = '/mydata/vocim/shared/KeypointAnnotations'):
+def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     # train_json_data = 'data/top_train_cls_mmdet_vocim.json'
     # eval_json_data = 'data/top_val_cls_mmdet_vocim.json'
     # img_dir = '/mydata/vocim/xiaoran/scripts/mmpose/data/vocim/images'
@@ -14,10 +16,17 @@ def main(eval_json_data, img_dir = '/mydata/vocim/shared/KeypointAnnotations'):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50')
+    """model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50')
     model.classifier = torch.nn.Sequential(
         torch.nn.Flatten(start_dim=1, end_dim=-1),
         torch.nn.Linear(in_features=2048, out_features=8, bias=True))
+    model = model.to(device)
+    """
+
+    num_classes = 8
+    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
+    in_features = model.head.in_features
+    model.head = nn.Linear(in_features, num_classes)
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()

@@ -66,7 +66,7 @@ def split(indices, ratio):
 def save_split(data, indices, output_name):
     split_data = copy.deepcopy(data)
     indices = sorted(indices)
-
+    
     split_data['annotations'] = [data['annotations'][i] for i in indices]
     data_ids = [data['annotations'][i]['id'] for i in indices]
     split_data['images'] = []
