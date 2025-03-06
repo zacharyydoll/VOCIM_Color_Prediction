@@ -13,7 +13,7 @@ def get_train_dataloder(json_file, img_dir, batch_size):
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize
     ])
     train_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
-    sampler = ClassBalancedSampler(train_data.labels).get_sampler()
+    sampler = ClassBalancedSampler(train_data.annotations).get_sampler()
     train_dataloader = DataLoader(train_data, sampler = sampler, batch_size=batch_size)
     return train_dataloader
 

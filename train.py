@@ -7,7 +7,7 @@ import timm
 import torch.nn as nn
 
 from torch.optim import AdamW
-from transformers import ResNetForImageClassification
+# from transformers import ResNetForImageClassification
 
 from model import Trainer
 from dataset import ImageDataset
