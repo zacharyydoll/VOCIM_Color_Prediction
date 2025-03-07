@@ -1,6 +1,7 @@
 from torch.utils.data import DataLoader
 from dataset import ImageDataset
 from sampler import ClassBalancedSampler
+from PIL import Image
 from PIL import ImageOps
 from torchvision import transforms
 

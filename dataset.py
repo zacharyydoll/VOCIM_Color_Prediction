@@ -53,6 +53,7 @@ class ImageDataset(Dataset):
         
         if self.transform:
             cropped_image = self.transform(cropped_image)
+            #print(f"Transformed image shape: {cropped_image.shape}")
 
         sample = {
             'image': cropped_image,

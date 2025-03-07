@@ -37,9 +37,18 @@ def main(train_json_data, eval_json_data, img_dir):
         # torch.nn.Flatten(start_dim=1, end_dim=-1),
         # torch.nn.Linear(in_features=2048, out_features=8, bias=True))
     model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
+    #print("Head in_features:", model.head.in_features)
     in_features = model.head.in_features
     num_classes = 8
-    model.head = nn.Linear(in_features, num_classes)
+    #model.head = nn.Linear(in_features, num_classes)
+    #model.head = nn.Linear(model.head.in_features, num_classes)
+    # Add global average pooling
+    model.head = nn.Sequential(
+        nn.AdaptiveAvgPool2d(1),  # Reduces spatial dimensions to (batch_size, 576, 1, 1)
+        nn.Flatten(),              # Flattens to (batch_size, 576)
+        nn.Linear(model.head.in_features, num_classes)  # Final classification layer
+    )
+
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()

@@ -39,12 +39,12 @@ class ClassBalancedSampler:
         Returns:
             np.ndarray: Array of class weights.
         """
+        epsilon = 1e-8 # just to avoid division by 0 
         class_counts = np.bincount(self.labels)
         total_count = len(self.labels)
         # Compute weights as the inverse of class frequencies
-        class_weights = total_count / (len(class_counts) * class_counts)
-        # Replace NaNs with 0 if there are any classes with zero samples
-        return np.nan_to_num(class_weights)
+        class_weights = total_count / (len(class_counts) * (class_counts + epsilon)) # might need to take out the epsilon value
+        return class_weights
 
     def _compute_sample_weights(self):
         """

@@ -27,7 +27,7 @@ class Trainer:
         labels = batch['label']
         images, labels = images.to(self.device), labels.to(self.device)
 
-        outputs = self.model(images).logits
+        outputs = self.model(images)
         loss = self.loss(outputs, labels)
         loss.backward()
         self.optimizer.step()
@@ -51,7 +51,7 @@ class Trainer:
                 bbox = sample['bbox'][0]
 
                 images, labels = images.to(self.device), labels.to(self.device)
-                outputs = self.model(images).logits
+                outputs = self.model(images)
                 loss = self.loss(outputs, labels)
                 total_loss += loss * len(sample)
                 _, preds = torch.max(outputs, 1)
