@@ -52,12 +52,10 @@ class ImageDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         
-        if self.transform:
-            cropped_image = self.transform(cropped_image)
-            #print(f"Transformed image shape: {cropped_image.shape}")
+        x, y, w, h = annotation['bbox']
 
         sample = {
-            'image': cropped_image,
+            'image': image,
             'label': label,
             'image_path': img_path,
             'bbox': [torch.tensor([x, y, w, h])]

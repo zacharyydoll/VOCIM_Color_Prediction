@@ -10,6 +10,9 @@ def letterbox(img, size=(512, 512), fill_color=(0, 0, 0)):
     Resize the image to fit within the size, while preserving aspect ratio, then pad 
     with specified color such that the final output is exactly `size`(512 for tiny_vit_21m_512)
     """
+    # ENSURING WE RETURN A PIL IMG!!
+    if not isinstance(img, Image.Image):
+        img = Image.fromarray(img)
     return ImageOps.pad(img, size, method=Image.BICUBIC, color=fill_color)
 
 train_transform = transforms.Compose([
