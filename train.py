@@ -52,7 +52,7 @@ def main(train_json_data, eval_json_data, img_dir):
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
+    optimizer = AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
 

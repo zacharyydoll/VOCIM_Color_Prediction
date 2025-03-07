@@ -25,7 +25,7 @@ class ClassBalancedSampler:
         Args:
             labels (list or np.ndarray): The labels for the dataset.
         """
-        self.labels = [extract_identity_number(i['identity']) for i in labels] # Convert each string to an integer
+        self.labels = [extract_identity_number(i['identity']) - 1 for i in labels] # Convert each string to an integer
         self.class_weights = self._compute_class_weights()
         self.sample_weights = self._compute_sample_weights()
         self.sampler = WeightedRandomSampler(weights=self.sample_weights, 

@@ -41,15 +41,16 @@ class ImageDataset(Dataset):
         annotation = self.annotations[idx]
         # Extract identity as string, then convert it to an int
         identity_str = annotation['identity']
-        label = extract_identity_number(identity_str)
+        label = extract_identity_number(identity_str) - 1
 
         img_idx = annotation['image_id']
         img_path = os.path.join(self.img_dir, self.img_paths[img_idx]['file_name'])
         assert os.path.exists(img_path), f"image doesn't exist at {img_path}"
 
+        # Fixed: Use the entire pre-cropped image
         image = Image.open(img_path)
-        x, y, w, h = annotation['bbox']
-        cropped_image = image.crop((x, y, x + w, y + h))
+        if self.transform:
+            image = self.transform(image)
         
         if self.transform:
             cropped_image = self.transform(cropped_image)
