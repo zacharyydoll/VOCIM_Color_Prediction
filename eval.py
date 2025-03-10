@@ -9,40 +9,43 @@ from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 
 def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
-    # train_json_data = 'data/top_train_cls_mmdet_vocim.json'
-    # eval_json_data = 'data/top_val_cls_mmdet_vocim.json'
-    # img_dir = '/mydata/vocim/xiaoran/scripts/mmpose/data/vocim/images'
     batch_size = 32
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    """model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50')
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(start_dim=1, end_dim=-1),
-        torch.nn.Linear(in_features=2048, out_features=8, bias=True))
-    model = model.to(device)
-    """
-
+    print("Creating model...")
     num_classes = 8
-    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
-    in_features = model.head.in_features
-    model.head = nn.Linear(in_features, num_classes)
+    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=False)
+    tmp_in_features = model.head.in_features  
+    model.head = nn.Sequential(
+        nn.AdaptiveAvgPool2d(1),  
+        nn.Flatten(),             
+        nn.Dropout(0.3),
+        nn.Linear(tmp_in_features, num_classes)
+    )
     model = model.to(device)
+    print("Model created.")
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 
     #train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
+    print("Number of evaluation batches: ", len(eval_loader))
 
     trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
-    trainer.load_model(ckpt='top_colorid_best_model.pth')
+    loaded_acc = trainer.load_model(ckpt='best_model/initial_training_model.pth')
+    print(f"Loaded checkpoint with best accuracy: {loaded_acc}")
+
+    #for debugging 
+    for i, sample in enumerate(eval_loader):
+        print(f"Batch {i} contains {sample['image'].size(0)} samples.")
+        break
+
+    print("Evaluating model...")
     trainer.evaluate(eval_loader, json_filename='output_top.pkl')
+    print("Evaluation complete.")
 
 if __name__=="__main__":
-    eval_json_data='data/newdata_cls_test_vidsplit.json'
+    eval_json_data='data/vocim_yolopose_test_vidsplit.json'
     main(eval_json_data = eval_json_data)
-
-
-
 

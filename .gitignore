@@ -14,4 +14,4 @@ identity.yaml
 !data/newdata_cls_test_vidsplit.json  
 output.log
 data/
-
+best_model/

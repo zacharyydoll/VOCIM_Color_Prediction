@@ -4,6 +4,7 @@ from torchvision import transforms
 from PIL import Image
 import math
 import collections
+import os
 import json
 from tqdm import tqdm
 import pickle
@@ -19,6 +20,8 @@ class Trainer:
         self.loss = loss.to(device)
         self.device = device
         self.best_accuracy = 0
+        self.epoch_losses = []      # For plotting
+        self.epoch_accuracies = []  # For plotting
 
     def train(self, batch):
         self.model.train()
@@ -90,9 +93,13 @@ class Trainer:
                 running_loss += loss.item() * len(batch)
 
             epoch_loss = running_loss / len(train_loader)
-            
             accuracy = self.evaluate(eval_loader)
             print(f'Epoch {epoch}, train loss: {epoch_loss}, eval accuracy: {accuracy}')
+
+            # For plotting
+            self.epoch_losses.append(epoch_loss)
+            self.epoch_accuracies.append(accuracy)
+
             if (epoch+1)%5+1:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_loss, accuracy, filename=view+'_ckpt.pth')
                 # Save the best model
@@ -114,8 +121,14 @@ class Trainer:
         plt.title('Evaluation Accuracy over Epochs')
         plt.legend()
         plt.tight_layout()
-        plt.savefig(view+'_training_metrics.png')
-        plt.show()
+
+        output_dir = '/mydata/vocim/zachary/color_prediction'
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_path = os.path.join(output_dir, 'training_metrics.png')
+        plt.savefig(output_path)
+        plt.close() 
+    
     
     def load_model(self, ckpt):
         try:

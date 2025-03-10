@@ -45,14 +45,15 @@ def main(train_json_data, eval_json_data, img_dir):
     # Add global average pooling
     model.head = nn.Sequential(
         nn.AdaptiveAvgPool2d(1),  # Reduces spatial dimensions to (batch_size, 576, 1, 1)
-        nn.Flatten(),              # Flattens to (batch_size, 576)
+        nn.Flatten(),             # Flattens to (batch_size, 576)
+        nn.Dropout(0.3),          # added dropout of 0.3, may need to tweak
         nn.Linear(model.head.in_features, num_classes)  # Final classification layer
     )
 
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
+    optimizer = AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
 
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
 
