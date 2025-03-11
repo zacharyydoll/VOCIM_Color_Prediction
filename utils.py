@@ -42,6 +42,18 @@ def save_best_model(model, accuracy, best_accuracy, filename='best_model.pth'):
         return accuracy
     return best_accuracy
 
+
+def get_device():
+    """
+    Determine the current device and print its details.
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Current device: {device}")
+    if torch.cuda.is_available():
+        print("GPU Name:", torch.cuda.get_device_name(torch.cuda.current_device()))
+    return device
+
+    
 def load_checkpoint(model, filename='best_model.pth'):
     """
     Load the best model from the checkpoint.
@@ -53,9 +65,9 @@ def load_checkpoint(model, filename='best_model.pth'):
     Returns:
         accuracy (float): The accuracy of the best model.
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     checkpoint = torch.load(filename, map_location=device)
-    #checkpoint = torch.load(filename)
     model.load_state_dict(checkpoint['model_state_dict'])
     accuracy = checkpoint['accuracy']
     print(f'Best model loaded from {filename} with accuracy {accuracy:.4f}')

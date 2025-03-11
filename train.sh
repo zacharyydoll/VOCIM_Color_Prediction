@@ -4,6 +4,7 @@
 CLEAN_CHECKPOINTS=${1:-false}
 
 if [ "$CLEAN_CHECKPOINTS" = true ]; then
+    echo "Replacing previously saved checkpoints."
     rm -f top_colorid_ckpt.pth top_colorid_best_model.pth
 fi
 
@@ -25,6 +26,8 @@ pip install --quiet matplotlib || true
 pip install --quiet scikit-learn || true
 pip install --quiet pandas || true
 
+clear
+
 # Define log files
 LOG_DIR="logs"
 mkdir -p "$LOG_DIR"
@@ -38,43 +41,21 @@ SUMMARY_FILE="$LOG_DIR/output_summary.log"
 > "$SUMMARY_FILE"
 
 # Start training silently
-nohup python -u train.py \
+nohup python3 -u train.py \
   --train_json_data data/vocim_yolopose_train_vidsplit.json \
   --eval_json_data data/vocim_yolopose_val_vidsplit.json \
   --img_dir /mydata/vocim/zachary/data/cropped \
-  > "$LOG_FILE" 2> "$ERROR_LOG" &
+  > "$LOG_FILE" 2>&1 &
+TRAIN_PID=$!
 
-# Start enhanced summary generator
-(
-  START_TIME=$(date +%s)
-  tail -f "$LOG_FILE" | grep --line-buffered -E \
-  '^Accuracy: |^Epoch |^Checkpoint saved|^Best model saved|Total training time' | \
-  while read line
-  do
-    # Add epoch timing
-    if [[ "$line" == *"Epoch "* ]]; then
-      EPOCH_TIME=$(date +%s)
-      echo "$line | Epoch duration: $((EPOCH_TIME - PREV_EPOCH_TIME))s" >> "$SUMMARY_FILE"
-      PREV_EPOCH_TIME=$EPOCH_TIME
-    elif [[ "$line" == *"Accuracy: "* ]]; then
-      PREV_EPOCH_TIME=$(date +%s)
-      echo "$line" >> "$SUMMARY_FILE"
-    else
-      echo "$line" >> "$SUMMARY_FILE"
-    fi
-    
-    # Add empty line after "Best model saved" lines
-    [[ "$line" == *"Best model saved"* ]] && echo >> "$SUMMARY_FILE"
-  done
-  
-  # Calculate total time when process exits
-  TOTAL_TIME=$(( $(date +%s) - START_TIME ))
-  echo -e "\nTotal training time: ${TOTAL_TIME}s" >> "$SUMMARY_FILE"
-) &
-
-echo "Training started. Monitor logs with:"
+echo "Training started with PID: $TRAIN_PID. Waiting for training to complete..."
+echo "Monitor logs with:"
 echo "  - Full log: tail -f $LOG_FILE"
 echo "  - Clean summary: tail -f $SUMMARY_FILE"
 echo "  - Errors: tail -f $ERROR_LOG"
-echo "Check training with: ps aux | grep "python train.py""
-echo "Kill the process with: pkill -f "python train.py""
+echo "Check training with: ps aux | grep \"python train.py\""
+echo "Kill the process with: pkill -f \"python train.py\""
+wait $TRAIN_PID
+
+grep -E '^Accuracy: |^Epoch |^Checkpoint saved|^Best model saved|Total training time' "$LOG_FILE" > "$SUMMARY_FILE"
+echo "Training completed. Summary file created at: $SUMMARY_FILE"

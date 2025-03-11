@@ -12,6 +12,7 @@ from torch.optim import AdamW
 from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def main(train_json_data, eval_json_data, img_dir):
     # train_json_data = 'data/'+view+'_rtmdet_train_colorid_vocim.json'
@@ -54,6 +55,7 @@ def main(train_json_data, eval_json_data, img_dir):
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
+    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=3, verbose=True) # learning rate scheduler 
 
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
 
@@ -63,7 +65,7 @@ def main(train_json_data, eval_json_data, img_dir):
     trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
     if os.path.exists('top_colorid_best_model.pth'):
         trainer.load_model('top_colorid_best_model.pth')
-    trainer.run_model(num_epoch = 50, train_loader=train_loader, eval_loader=eval_loader, view = 'top_colorid')
+    trainer.run_model(num_epoch = 50, train_loader=train_loader, eval_loader=eval_loader, view = 'top_colorid', scheduler= scheduler)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()

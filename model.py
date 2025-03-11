@@ -84,7 +84,8 @@ class Trainer:
         print(f'Accuracy: {accuracy:.4f} Loss: {loss_avg:.4f}')
         return accuracy 
     
-    def run_model(self, num_epoch, train_loader, eval_loader, view):
+    def run_model(self, num_epoch, train_loader, eval_loader, view, scheduler=None):
+        best_epochs = 0 # for early stopping
         for epoch in range(num_epoch):
             running_loss = 0
             for batch_idx, batch in enumerate(tqdm(train_loader, desc="Training Batches", unit="batch")):
@@ -100,13 +101,26 @@ class Trainer:
             self.epoch_losses.append(epoch_loss)
             self.epoch_accuracies.append(accuracy)
 
+            # update the scheduler
+            if scheduler is not None:
+                scheduler.step(accuracy)
+
+            early_stoppage = 50 # epochs
+            if accuracy > self.best_accuracy:
+                self.best_accuracy = accuracy
+                best_epochs = 0 # reset count when accuracy improves
+            else:
+                best_epochs += 1
+                if best_epochs >= early_stoppage:
+                    print(f'No improvement over {early_stoppage} epochs, stopping early.')
+                    break
+
             if (epoch+1)%5+1:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_loss, accuracy, filename=view+'_ckpt.pth')
-                # Save the best model
                 self.best_accuracy = save_best_model(self.model, accuracy, self.best_accuracy, filename=view+'_best_model.pth')
 
         # Plot metrics after training
-        epochs = list(range(num_epoch))
+        epochs = list(range(len(self.epoch_losses)))
         plt.figure(figsize=(12, 5))
         plt.subplot(1, 2, 1)
         plt.plot(epochs, self.epoch_losses, label='Train Loss')
