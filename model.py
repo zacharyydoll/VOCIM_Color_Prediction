@@ -107,7 +107,7 @@ class Trainer:
 
             early_stoppage = 50 # epochs
             if accuracy > self.best_accuracy:
-                self.best_accuracy = accuracy
+                self.best_accuracy = save_best_model(self.model, accuracy, self.best_accuracy, filename=view+'_best_model.pth')
                 best_epochs = 0 # reset count when accuracy improves
             else:
                 best_epochs += 1
@@ -117,7 +117,7 @@ class Trainer:
 
             if (epoch+1)%5+1:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_loss, accuracy, filename=view+'_ckpt.pth')
-                self.best_accuracy = save_best_model(self.model, accuracy, self.best_accuracy, filename=view+'_best_model.pth')
+                #self.best_accuracy = save_best_model(self.model, accuracy, self.best_accuracy, filename=view+'_best_model.pth')
 
         # Plot metrics after training
         epochs = list(range(len(self.epoch_losses)))
