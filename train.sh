@@ -26,7 +26,6 @@ pip install --quiet matplotlib || true
 pip install --quiet scikit-learn || true
 pip install --quiet pandas || true
 
-clear
 
 # Define log files
 LOG_DIR="logs"
@@ -42,8 +41,8 @@ SUMMARY_FILE="$LOG_DIR/output_summary.log"
 
 # Start training silently
 nohup python3 -u train.py \
-  --train_json_data data/vocim_yolopose_train_vidsplit.json \
-  --eval_json_data data/vocim_yolopose_val_vidsplit.json \
+  --train_json_data data/newdata_cls_train_vidsplit_n.json \
+  --eval_json_data data/newdata_cls_val_vidsplit_n.json \
   --img_dir /mydata/vocim/zachary/data/cropped \
   > "$LOG_FILE" 2>&1 &
 TRAIN_PID=$!

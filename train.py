@@ -38,6 +38,52 @@ def main(train_json_data, eval_json_data, img_dir):
         # torch.nn.Flatten(start_dim=1, end_dim=-1),
         # torch.nn.Linear(in_features=2048, out_features=8, bias=True))
     model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
+    print("Available attributes in model.patch_embed:", dir(model.patch_embed))
+
+    # Determine which attribute holds the patch embedding layer.
+    if hasattr(model.patch_embed, 'proj'):
+        attr_name = 'proj'
+    elif hasattr(model.patch_embed, 'projection'):
+        attr_name = 'projection'
+    elif hasattr(model.patch_embed, 'conv'):
+        attr_name = 'conv'
+    elif hasattr(model.patch_embed, 'conv1'):
+        attr_name = 'conv1'
+    else:
+        raise AttributeError("Could not find a patch embedding convolution layer in model.patch_embed. Available attributes: " + str(dir(model.patch_embed)))
+
+    # Retrieve the original layer.
+    orig_layer = getattr(model.patch_embed, attr_name)
+    # If the layer is a ConvNorm (or wrapper), get the underlying conv layer.
+    if hasattr(orig_layer, 'conv'):
+        conv_layer = orig_layer.conv
+    else:
+        conv_layer = orig_layer
+
+    # Now, get the weight shape from the underlying conv layer.
+    C_out, _, k, k = conv_layer.weight.shape
+
+    # Create a new weight tensor for 4 channels.
+    new_weight = torch.zeros(C_out, 4, k, k)
+    new_weight[:, :3, :, :] = conv_layer.weight  # Copy weights for RGB channels.
+    new_weight[:, 3:, :, :] = 0.0                # Initialize the extra mask channel to zeros.
+
+    # Create a new Conv2d layer that accepts 4 channels.
+    new_conv = nn.Conv2d(4, C_out, kernel_size=k, stride=conv_layer.stride, padding=conv_layer.padding)
+    new_conv.weight.data = new_weight
+    if conv_layer.bias is not None:
+        new_conv.bias.data = conv_layer.bias.data
+
+    # Now, update the underlying conv layer inside the wrapper if applicable.
+    if hasattr(orig_layer, 'conv'):
+        orig_layer.conv = new_conv
+    else:
+        # Otherwise, replace the whole layer.
+        setattr(model.patch_embed, attr_name, new_conv)
+
+    print(model.patch_embed)
+
+
     #print("Head in_features:", model.head.in_features)
     in_features = model.head.in_features
     num_classes = 8
@@ -58,10 +104,9 @@ def main(train_json_data, eval_json_data, img_dir):
     scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=3, verbose=True) # learning rate scheduler 
 
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
-
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
     
-    # img_dir relative path should be "/mydata/vocim/zachary/data/cropped"
+    # train the model
     trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
     if os.path.exists('top_colorid_best_model.pth'):
         trainer.load_model('top_colorid_best_model.pth')

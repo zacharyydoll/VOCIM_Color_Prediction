@@ -4,157 +4,119 @@ import copy
 import random
 import math
 
-def summarize_data(data_path):
-    import glob
-    import pandas as pd
-
-    annotation_folders = glob.glob(os.path.join(data_path, "*BP*/labeled*/BP*"))
-    summary = dict()
-    for folder in annotation_folders:
-        df_filename = [os.path.join(data_path, folder, i) for i in os.listdir(folder) if i.endswith('.csv')]
-        if len(df_filename):
-            df_filename = df_filename[0]
-        else:
-            df_filename = None
-            print(f"{folder} has no annotations")
-                
-        img_filenames = [os.path.join(folder,i) for i in os.listdir(folder) if i.endswith('.png') or i.endswith('.jpg')]
-        if not len(img_filenames):
-            print(f"{folder} has no images" )
-
-        if df_filename:
-            df = pd.read_csv(df_filename, header=[0,1,2,3])
-            ncols = len(df.columns)-3
-            nbird = ncols/10
-            if nbird not in summary.keys():
-                summary[nbird]=[[], []]
-            
-            summary[nbird][0].append(folder)
-            summary[nbird][1].append(img_filenames)
-    return summary
-
-
-def split(indices, ratio):
-    assert len(ratio)==3, "set split ratio such as [0.7, 0.2, 0.1]" 
-    train_ratio, val_ratio, test_ratio = ratio
-    assert train_ratio<1 and val_ratio<1 and test_ratio<1 and (train_ratio+val_ratio+test_ratio)>0.9999, "ratios should be lower than 1 and sum up to 1"
-
-    random.shuffle(indices)
-    len_indices = len(indices)
-
-    if len_indices<3:
-        out = [[indices[i]] if i<len_indices else [] for i in range(3)]
-        return 
-    if len_indices==3:
-        return [[indices[i]] for i in range(3)]
-
-    intervals = [math.floor(len_indices * train_ratio), math.ceil(len_indices * val_ratio)]
-    intervals = [int(i) for i in intervals]
-
-    train_indices = indices[:intervals[0]]
-    val_indices = indices[intervals[0]:intervals[0]+intervals[1]]
-    test_indices = indices[intervals[0]+intervals[1]:]
-
-    if not len(test_indices) and len(val_indices)>1:
-        test_indices = [val_indices[-1]]
-        val_indices = val_indices[:-1]
-    return [train_indices, val_indices, test_indices] 
+def split_list(items, ratio):
+    """
+    Shuffle and split a list of items into three parts according to ratio.
+    Expects ratio to be a list of three floats that sum to ~1.
+    """
+    assert len(ratio) == 3, "Ratio must have three elements (e.g., [0.7, 0.2, 0.1])."
+    random.shuffle(items)
+    n = len(items)
+    train_n = int(n * ratio[0])
+    val_n = int(n * ratio[1])
+    train = items[:train_n]
+    val = items[train_n:train_n + val_n]
+    test = items[train_n + val_n:]
+    # Ensure that each split gets at least one item if possible
+    if n >= 3:
+        if len(train) == 0: train = [items[0]]
+        if len(val) == 0: val = [items[1]]
+        if len(test) == 0: test = [items[-1]]
+    return train, val, test
 
 def save_split(data, indices, output_name):
+    """
+    Creates a new JSON from the original master JSON data using the given annotation indices,
+    and reassigns image and annotation IDs.
+    """
     split_data = copy.deepcopy(data)
     indices = sorted(indices)
-
     split_data['annotations'] = [data['annotations'][i] for i in indices]
-    data_ids = [data['annotations'][i]['id'] for i in indices]
     split_data['images'] = []
-    # split_data['images'] = [data['images'][i] for i in data_ids] 
 
     new_img_id = 0
-    cur_id = -1
-    for i, entry in enumerate(split_data['annotations']):        
-        data_id = entry['id']
-        img_id = entry['image_id']
-
-        if cur_id ==-1 or img_id!=cur_id:
-            cur_id = img_id
-
+    cur_img = -1
+    for i, anno in enumerate(split_data['annotations']):
+        img_id = anno['image_id']
+        if cur_img != img_id:
+            cur_img = img_id
+            # Append this image only once.
             split_data['images'].append(data['images'][img_id])
             split_data['images'][-1]['id'] = new_img_id
-            new_img_id+=1
+            new_img_id += 1
+        # Reassign IDs
+        anno['id'] = i
+        # Set the annotation image_id to the new image id
+        anno['image_id'] = split_data['images'][-1]['id']
 
-        entry['id'] = i
-        entry['image_id'] = split_data['images'][-1]['id']
-
-    with open(output_name, "w") as json_file:
-        json.dump(split_data, json_file)
-        print(f'data split saved to {output_name}')
+    with open(output_name, "w") as f:
+        json.dump(split_data, f, indent=2)
+    print(f"Data split saved to {output_name}")
 
 def main():
-    with open('data/newdata_cls_trainvaltest.json', 'r') as f:
+    # Load the master JSON (adjust the path as needed)
+    master_json_path = '../data/cropped_merged_annotations.json'
+    with open(master_json_path, 'r') as f:
         data = json.load(f)
 
-    test_videos = ['BP_2021-06-01_15-05-46_096578_0000000', 'BP_2022-09-07_12-33-47_959910_0000000', 'BP_2023-06-23_14-44-16_556681_0380000']
-    data_by_n = dict()
+    # Define a list of videos that you want to assign to test set regardless of color
+    test_videos = ['BP_2021-06-01_15-05-46_096578_0000000', 
+                   'BP_2022-09-07_12-33-47_959910_0000000', 
+                   'BP_2023-06-23_14-44-16_556681_0380000']
 
-    train_ids_all_n = []
-    val_ids_all_n = []
-    test_ids_all_n = []
+    # For each annotation, group by color and then by video.
+    # We'll build a dictionary:
+    # color_groups[color][video_name] = list of annotation indices.
+    color_groups = {}
+    for anno in data['annotations']:
+        color = anno['identity']  # your backpack color label, e.g., "bird_1"
+        img = data['images'][anno['image_id']]
+        # Extract video name from file path; assume video folder is second-to-last element.
+        parts = img['file_name'].split('/')
+        if len(parts) < 2:
+            continue
+        video_name = parts[-2]
+        # Initialize nested dictionary
+        if color not in color_groups:
+            color_groups[color] = {}
+        if video_name not in color_groups[color]:
+            color_groups[color][video_name] = []
+        color_groups[color][video_name].append(anno['id'])
 
-    data_by_n = dict()
-    summary = summarize_data('/mydata/vocim/shared/KeypointAnnotations')
-    for k in summary.keys():
-        for v in summary[k][0]:
-            _v = v.split('/')[-1]
-            data_by_n[_v] = k
+    # Now, for each color, split the videos into train/val/test.
+    train_ids_all = []
+    val_ids_all = []
+    test_ids_all = []
 
-    for k in summary.keys():
-        data_summary = dict()
+    for color, videos in color_groups.items():
+        # Get list of video names for this color.
+        video_names = list(videos.keys())
+        # Exclude videos that are predetermined for testing.
+        train_val_videos = [vn for vn in video_names if vn not in test_videos]
+        test_videos_color = [vn for vn in video_names if vn in test_videos]
         
-        for image, anno in zip(data['images'], data['annotations']):
-            video_name = image['file_name'].split('/')[-2]
-            if data_by_n[video_name]!=k or video_name in test_videos:
-                continue
-
-            color_label = anno['identity']
-            idx = anno['id']
-            
-            if color_label not in data_summary.keys():
-                data_summary[color_label] = dict()
-            
-            if video_name not in data_summary[color_label].keys():
-                data_summary[color_label][video_name] = []
-
-            data_summary[color_label][video_name].append(idx)
-
-        train_ids = []
-        val_ids = []
-        test_ids = []
-
-        for color in data_summary.keys():
-            vids = list(data_summary[color].keys())
-            vid_indices = list(range(len(vids)))
-            train, val, test = split(vid_indices, [0.7, 0.2, 0.1])
-            # import pdb
-            # pdb.set_trace()
-            train_ids.extend([data_summary[color][vids[i]] for i in train])
-            val_ids.extend([data_summary[color][vids[i]] for i in val])
-            test_ids.extend([data_summary[color][vids[i]] for i in test])
-
+        # Split the train_val_videos using your desired ratio.
+        train_vids, val_vids, test_vids_split = split_list(train_val_videos, [0.7, 0.2, 0.1])
+        # Combine predetermined test videos with those from split.
+        test_vids = test_vids_split + test_videos_color
         
-        train_ids = [i for ids in train_ids for i in ids]
-        val_ids = [i for ids in val_ids for i in ids]
-        test_ids = [i for ids in test_ids for i in ids]
+        # For each set, collect the annotation indices.
+        for vn in train_vids:
+            train_ids_all.extend(videos[vn])
+        for vn in val_vids:
+            val_ids_all.extend(videos[vn])
+        for vn in test_vids:
+            test_ids_all.extend(videos[vn])
 
-        train_ids_all_n.append(train_ids)
-        val_ids_all_n.append(val_ids)
-        test_ids_all_n.append(test_ids)
+    # Optionally, shuffle the indices from each set
+    random.shuffle(train_ids_all)
+    random.shuffle(val_ids_all)
+    random.shuffle(test_ids_all)
 
+    # Save the splits.
+    save_split(data, train_ids_all, 'data/newdata_cls_train_vidsplit_n.json')
+    save_split(data, val_ids_all, 'data/newdata_cls_val_vidsplit_n.json')
+    save_split(data, test_ids_all, 'data/newdata_test_vidsplit_n.json')
 
-    train_ids_all_n = [i for ids in train_ids_all_n for i in ids]
-    val_ids_all_n = [i for ids in val_ids_all_n for i in ids]
-    test_ids_all_n = [i for ids in test_ids_all_n for i in ids]
-
-
-    save_split(data, train_ids_all_n, 'data/newdata_cls_train_vidsplit_n.json')
-    save_split(data, val_ids_all_n, 'data/newdata_cls_val_vidsplit_n.json')
-    save_split(data, test_ids_all_n, 'data/newdata_test_vidsplit_n.json')
+if __name__ == "__main__":
+    main()

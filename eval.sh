@@ -3,7 +3,6 @@
 conda init bash
 source ~/.bashrc
 
-cd /mydata/vocim/xiaoran/scripts/bird_identity_classification
 # Define log files
 LOG_FILE="logs/train.log"
 ERROR_LOG="logs/error.log"

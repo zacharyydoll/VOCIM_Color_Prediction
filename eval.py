@@ -46,6 +46,6 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     print("Evaluation complete.")
 
 if __name__=="__main__":
-    eval_json_data='data/vocim_yolopose_test_vidsplit.json'
+    eval_json_data='data/newdata_test_vidsplit_n.json'
     main(eval_json_data = eval_json_data)
 
