@@ -98,7 +98,7 @@ class Trainer:
             if scheduler is not None:
                 scheduler.step(eval_accuracy)
 
-            early_stoppage = 50  # epochs
+            early_stoppage = 15  # epochs
             if eval_accuracy > self.best_accuracy:
                 self.best_accuracy = save_best_model(self.model, eval_accuracy, self.best_accuracy, filename=view+'_best_model.pth')
                 best_epochs = 0  # reset count when accuracy improves

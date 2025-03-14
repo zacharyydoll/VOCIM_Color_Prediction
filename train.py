@@ -28,7 +28,8 @@ def main(train_json_data, eval_json_data, img_dir):
     #    img_dir = '/mydata/vocim/xiaoran/scripts/mmpose/data/vocim/images'
     #else:
     #    img_dir = '/mydata/vocim/xiaoran/scripts/mmpose/data/vocim/images_'+view
-    batch_size = 8
+    batch_size = 16
+    num_epochs = 50
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -38,7 +39,6 @@ def main(train_json_data, eval_json_data, img_dir):
         # torch.nn.Flatten(start_dim=1, end_dim=-1),
         # torch.nn.Linear(in_features=2048, out_features=8, bias=True))
     model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=True)
-    print("Available attributes in model.patch_embed:", dir(model.patch_embed))
 
     # Determine which attribute holds the patch embedding layer.
     if hasattr(model.patch_embed, 'proj'):
@@ -81,8 +81,6 @@ def main(train_json_data, eval_json_data, img_dir):
         # Otherwise, replace the whole layer.
         setattr(model.patch_embed, attr_name, new_conv)
 
-    print(model.patch_embed)
-
 
     #print("Head in_features:", model.head.in_features)
     in_features = model.head.in_features
@@ -93,15 +91,39 @@ def main(train_json_data, eval_json_data, img_dir):
     model.head = nn.Sequential(
         nn.AdaptiveAvgPool2d(1),  # Reduces spatial dimensions to (batch_size, 576, 1, 1)
         nn.Flatten(),             # Flattens to (batch_size, 576)
-        nn.Dropout(0.3),          # added dropout of 0.3, may need to tweak
+        nn.Dropout(0.5),          # added dropout of 0.3, may need to tweak
         nn.Linear(model.head.in_features, num_classes)  # Final classification layer
     )
 
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.0001, weight_decay=0.01)
-    scheduler = ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=3, verbose=True) # learning rate scheduler 
+    optimizer = AdamW(model.parameters(), lr=0.00005, weight_decay=0.01)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.4, patience=2, verbose=True) # learning rate scheduler 
+    scheduler_info = f"Scheduler: {scheduler.__class__.__name__}, Mode: {scheduler.mode}, Factor: {scheduler.factor}, Patience: {scheduler.patience}"
+
+    summary = f"""
+    Training Summary:
+    ---------------------
+    Model: {model.__class__.__name__}
+    Pretrained: True
+    Batch size: {batch_size}
+    Number of epochs: {num_epochs}
+    Learning Rate: {optimizer.param_groups[0]['lr']}
+    Weight Decay: {optimizer.defaults.get('weight_decay', 'N/A')}
+    Device: {device}
+    Train JSON: {train_json_data}
+    Eval JSON: {eval_json_data}
+    Image Directory: {img_dir}
+    {scheduler_info}
+    ---------------------
+    """
+
+    print(summary)
+    
+    # Also write to output_summary.log
+    with open("logs/output_summary.log", "w") as f:
+        f.write(summary)
 
     train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
@@ -110,7 +132,7 @@ def main(train_json_data, eval_json_data, img_dir):
     trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
     if os.path.exists('top_colorid_best_model.pth'):
         trainer.load_model('top_colorid_best_model.pth')
-    trainer.run_model(num_epoch = 50, train_loader=train_loader, eval_loader=eval_loader, view = 'top_colorid', scheduler= scheduler)
+    trainer.run_model(num_epoch = num_epochs, train_loader=train_loader, eval_loader=eval_loader, view = 'top_colorid', scheduler= scheduler)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()

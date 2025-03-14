@@ -19,7 +19,6 @@ train_transform = transforms.Compose([
     transforms.Lambda(lambda img: letterbox(img, size=(512, 512))),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
-    #transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),  # new augmentation (2)
     transforms.RandomRotation(10), # rotate images by +/- 10 degrees (2)
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
