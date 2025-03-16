@@ -98,7 +98,7 @@ class Trainer:
             if scheduler is not None:
                 scheduler.step(eval_accuracy)
 
-            early_stoppage = 15  # epochs
+            early_stoppage = 12  # epochs
             if eval_accuracy > self.best_accuracy:
                 self.best_accuracy = save_best_model(self.model, eval_accuracy, self.best_accuracy, filename=view+'_best_model.pth')
                 best_epochs = 0  # reset count when accuracy improves
@@ -107,6 +107,11 @@ class Trainer:
                 if best_epochs >= early_stoppage:
                     print(f'No improvement over {early_stoppage} epochs, stopping early.')
                     break
+
+            epoch_log = f"No Improvement count: {best_epochs} "
+            print(epoch_log)
+            with open("logs/output_summary.log", "a") as f:
+                f.write(epoch_log)
 
             if (epoch+1) % 5 + 1:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_train_loss, eval_accuracy, filename=view+'_ckpt.pth')

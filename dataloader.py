@@ -20,6 +20,12 @@ train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
     transforms.RandomRotation(10), # rotate images by +/- 10 degrees (2)
+    transforms.RandomAffine(
+         degrees=10,              # further rotation 
+         translate=(0.1, 0.1),    # random translation in x and y directions (10% of image size)
+         scale=(0.9, 1.1),        # random scaling between 90% and 110%
+         shear=5                  # random shear in degrees
+    ),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                          std=[0.229, 0.224, 0.225])

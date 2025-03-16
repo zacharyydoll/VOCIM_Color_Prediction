@@ -30,6 +30,7 @@ def main(train_json_data, eval_json_data, img_dir):
     #    img_dir = '/mydata/vocim/xiaoran/scripts/mmpose/data/vocim/images_'+view
     batch_size = 16
     num_epochs = 50
+    dropout_rate = 0.6
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -91,15 +92,15 @@ def main(train_json_data, eval_json_data, img_dir):
     model.head = nn.Sequential(
         nn.AdaptiveAvgPool2d(1),  # Reduces spatial dimensions to (batch_size, 576, 1, 1)
         nn.Flatten(),             # Flattens to (batch_size, 576)
-        nn.Dropout(0.5),          # added dropout of 0.3, may need to tweak
+        nn.Dropout(dropout_rate),          # added dropout of 0.3, may need to tweak
         nn.Linear(model.head.in_features, num_classes)  # Final classification layer
     )
 
     model = model.to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.00005, weight_decay=0.01)
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.4, patience=2, verbose=True) # learning rate scheduler 
+    optimizer = AdamW(model.parameters(), lr=0.00005, weight_decay=0.03) # double weight decay 
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.4, patience=1, verbose=True) # learning rate scheduler 
     scheduler_info = f"Scheduler: {scheduler.__class__.__name__}, Mode: {scheduler.mode}, Factor: {scheduler.factor}, Patience: {scheduler.patience}"
 
     summary = f"""
@@ -111,6 +112,7 @@ def main(train_json_data, eval_json_data, img_dir):
     Number of epochs: {num_epochs}
     Learning Rate: {optimizer.param_groups[0]['lr']}
     Weight Decay: {optimizer.defaults.get('weight_decay', 'N/A')}
+    Dropout Rate: {dropout_rate}
     Device: {device}
     Train JSON: {train_json_data}
     Eval JSON: {eval_json_data}
