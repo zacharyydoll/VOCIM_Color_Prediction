@@ -20,10 +20,10 @@ python3 /mydata/vocim/zachary/scripts/crop_annotations.py
 # 5. Run merge JSON files and ensure output location
 echo "Merging JSON files..."
 python3 /mydata/vocim/zachary/scripts/merge_json_files.py
-mv /mydata/vocim/zachary/scripts/cropped_merged_annotations.json /mydata/vocim/zachary/data/
+mv /mydata/vocim/zachary/color_prediction/cropped_merged_annotations.json /mydata/vocim/zachary/data/
 
 # 6. Run video split and ensure output location
 cd /mydata/vocim/zachary/color_prediction/
-python split_by_video.py
+python3 split_by_color_video.py
 
 echo "Data renewal complete."

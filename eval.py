@@ -3,36 +3,29 @@ import torch
 import torch.nn as nn
 import timm 
 from torch.optim import AdamW
-from transformers import ResNetForImageClassification
 from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
+from config import batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, scheduler_factor, scheduler_patience, num_classes, model_name
+from model_builder import build_model
+
 
 def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
-    batch_size = 32
+    eval_batch_size = 32
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     print("Creating model...")
-    num_classes = 8
-    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=False)
-    tmp_in_features = model.head.in_features  
-    model.head = nn.Sequential(
-        nn.AdaptiveAvgPool2d(1),  
-        nn.Flatten(),             
-        nn.Dropout(0.3),
-        nn.Linear(tmp_in_features, num_classes)
-    )
+    model = build_model(pretrained=True, dropout_rate=dropout_rate, num_classes=num_classes)
     model = model.to(device)
     print("Model created.")
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
+    optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
-    #train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
-    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
+    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size)
     print("Number of evaluation batches: ", len(eval_loader))
 
-    trainer = Trainer(model = model, loss = criterion, optimizer = optimizer, device = device)
+    trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
     loaded_acc = trainer.load_model(ckpt='top_colorid_best_model.pth')
     print(f"Loaded checkpoint with best accuracy: {loaded_acc}")
 
@@ -46,6 +39,6 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     print("Evaluation complete.")
 
 if __name__=="__main__":
-    eval_json_data='data/newdata_test_vidsplit_n.json'
+    eval_json_data='/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json'
     main(eval_json_data = eval_json_data)
 
