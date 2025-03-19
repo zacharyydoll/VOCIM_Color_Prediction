@@ -6,11 +6,17 @@ import math
 import collections
 import os
 import json
+import time
 from tqdm import tqdm
 import pickle
 from sklearn.metrics import accuracy_score
 from utils import save_checkpoint, save_best_model, load_checkpoint
 import pdb
+
+def log_message(message, log_file="logs/output_summary.log"):
+    print(message)
+    with open(log_file, "a") as f:
+        f.write(message + "\n")
 
 # Function to classify an image
 class Trainer:
@@ -74,20 +80,21 @@ class Trainer:
                 pickle.dump(results, f)
             print(f'Predictions saved to {json_filename}')
         
-        return accuracy, loss_avg  # Return both evaluation accuracy and loss
+        return accuracy, loss_avg  # return both eval accuracy and loss
     
     def run_model(self, num_epoch, train_loader, eval_loader, view, scheduler=None):
         best_epochs = 0  # for early stopping
         for epoch in range(num_epoch):
+            epoch_start = time.time()
             running_loss = 0
             for batch_idx, batch in enumerate(tqdm(train_loader, desc="Training Batches", unit="batch")):
                 loss = self.train(batch)
                 running_loss += loss.item() * len(batch)
 
             epoch_train_loss = running_loss / len(train_loader)
-            # Evaluate returns (accuracy, eval_loss)
+
             eval_accuracy, eval_loss = self.evaluate(eval_loader)
-            print(f'Epoch {epoch}, Train Loss: {epoch_train_loss:.4f}, Eval Accuracy: {eval_accuracy:.4f}, Eval Loss: {eval_loss:.4f}')
+            log_message(f"\nEpoch {epoch}, Train Loss: {epoch_train_loss:.4f}, Eval Accuracy: {eval_accuracy:.4f}, Eval Loss: {eval_loss:.4f}")
 
             # Store losses and accuracy
             self.epoch_losses.append(epoch_train_loss)
@@ -98,54 +105,30 @@ class Trainer:
             if scheduler is not None:
                 scheduler.step(eval_accuracy)
 
-            early_stoppage = 12  # epochs
+            early_stoppage = 10  # epochs
             if eval_accuracy > self.best_accuracy:
                 self.best_accuracy = save_best_model(self.model, eval_accuracy, self.best_accuracy, filename=view+'_best_model.pth')
+                log_message(f"New best model with {self.best_accuracy:.4f} accuracy saved to {view+'_best_model.pth'}")
                 best_epochs = 0  # reset count when accuracy improves
             else:
                 best_epochs += 1
                 if best_epochs >= early_stoppage:
-                    print(f'No improvement over {early_stoppage} epochs, stopping early.')
+                    log_message(f"\nNo improvement over {early_stoppage} epochs, stopping early with best model at {self.best_accuracy:.4f} accuracy.")
                     break
 
-            epoch_log = f"No Improvement count: {best_epochs} "
-            print(epoch_log)
-            with open("logs/output_summary.log", "a") as f:
-                f.write(epoch_log)
+            log_message(f"No Improvement count: {best_epochs}")
 
-            if (epoch+1) % 5 + 1:
+            epoch_time = time.time() - epoch_start
+            hours = int(epoch_time // 3600)
+            minutes = int((epoch_time % 3600) // 60)
+            seconds = int(epoch_time % 60)
+            log_message(f"Epoch {epoch} took {hours}h {minutes}m {seconds}s")
+
+            if (epoch+1) % 2 == 0:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_train_loss, eval_accuracy, filename=view+'_ckpt.pth')
+                log_message(f"Checkpoint saved to {view+'_colorid_ckpt.pth'}")
+            log_message("\nTraining complete.")
 
-        # Plot training and evaluation loss on the same graph
-        epochs = list(range(len(self.epoch_losses)))
-        plt.figure(figsize=(8, 6))
-        plt.plot(epochs, self.epoch_losses, label='Training Loss')
-        plt.plot(epochs, self.epoch_eval_losses, label='Evaluation Loss')
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss')
-        plt.title('Training and Evaluation Loss over Epochs')
-        plt.legend()
-        plt.tight_layout()
-
-        output_dir = '/mydata/vocim/zachary/color_prediction'
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, 'loss_curve.png')
-        plt.savefig(output_path)
-        print(f'Loss curve saved to {output_path}')
-        plt.close()
-
-        # Also plot evaluation accuracy separately if desired
-        plt.figure(figsize=(8, 6))
-        plt.plot(epochs, self.epoch_accuracies, label='Evaluation Accuracy')
-        plt.xlabel('Epoch')
-        plt.ylabel('Accuracy')
-        plt.title('Evaluation Accuracy over Epochs')
-        plt.legend()
-        plt.tight_layout()
-        output_path = os.path.join(output_dir, 'accuracy_curve.png')
-        plt.savefig(output_path)
-        print(f'Accuracy curve saved to {output_path}')
-        plt.close()
 
     def load_model(self, ckpt):
         try:

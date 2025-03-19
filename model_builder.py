@@ -18,7 +18,7 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8):
     else:
         raise AttributeError("Could not find patch embedding layer.")
 
-    # Retrieve the original layer
+    # retrieve original layer
     orig_layer = getattr(model.patch_embed, attr_name)
     # If layer is a ConvNorm (wrapper), get underlying conv layer.
     if hasattr(orig_layer, 'conv'):
@@ -29,12 +29,12 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8):
     # Get weight shape from the underlying conv layer.
     C_out, _, k, k = conv_layer.weight.shape
 
-    # Create new weight tensor for 4 channels.
+    # create new weight tensor for 4 channels.
     new_weight = torch.zeros(C_out, 4, k, k)
     new_weight[:, :3, :, :] = conv_layer.weight
     new_weight[:, 3:, :, :] = 0.0
     
-    # Create a new Conv2d layer that accepts 4 channels.
+    # create new Conv2d layer that accepts 4 channels.
     new_conv = nn.Conv2d(4, C_out, kernel_size=k, stride=conv_layer.stride, padding=conv_layer.padding)
     new_conv.weight.data = new_weight
     if conv_layer.bias is not None:
@@ -49,10 +49,10 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8):
 
     in_features = model.head.in_features
     model.head = nn.Sequential(
-        nn.AdaptiveAvgPool2d(1),  # Reduces spatial dimensions to (batch_size, 576, 1, 1)
-        nn.Flatten(),             # Flattens to (batch_size, 576)
-        nn.Dropout(dropout_rate),          # added dropout of 0.3, may need to tweak
-        nn.Linear(model.head.in_features, num_classes)  # Final classification layer
+        nn.AdaptiveAvgPool2d(1),  
+        nn.Flatten(),            
+        nn.Dropout(dropout_rate),         
+        nn.Linear(model.head.in_features, num_classes) 
     )
 
     return model

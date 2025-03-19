@@ -34,11 +34,11 @@ train_transform = transforms.Compose([
 def get_train_dataloder(json_file, img_dir, batch_size):
     transform = train_transform # using letteboxing to 512
     train_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
-    sampler = ClassBalancedSampler(train_data.annotations).get_sampler()
+    sampler = ClassBalancedSampler(train_data).get_sampler()
     train_dataloader = DataLoader(train_data, sampler = sampler, batch_size=batch_size)
     return train_dataloader
 
-def get_eval_dataloder(json_file, img_dir, batch_size):
+def get_eval_dataloder(json_file, img_dir, batch_size, num_workers=0):
     transform = transforms.Compose([
         transforms.Lambda(lambda img: letterbox(img, size=(512, 512))),
         transforms.ToTensor(),
@@ -47,5 +47,5 @@ def get_eval_dataloder(json_file, img_dir, batch_size):
     ])
     eval_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
     # sampler = ClassBalancedSampler(eval_data.labels).get_sampler()
-    eval_dataloader = DataLoader(eval_data, batch_size=batch_size, shuffle=False)
+    eval_dataloader = DataLoader(eval_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=False)
     return eval_dataloader

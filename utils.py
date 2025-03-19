@@ -20,7 +20,7 @@ def save_checkpoint(model, optimizer, epoch, loss, accuracy, filename='checkpoin
         'loss': loss
     }
     torch.save(checkpoint, filename)
-    print(f'Checkpoint saved to {filename}')
+    #print(f'Checkpoint saved to {filename}')
 
 def save_best_model(model, accuracy, best_accuracy, filename='best_model.pth'):
     """
@@ -38,7 +38,7 @@ def save_best_model(model, accuracy, best_accuracy, filename='best_model.pth'):
             'accuracy': accuracy
         }
         torch.save(checkpoint, filename)
-        print(f'Best model saved to {filename} with accuracy {accuracy:.4f}')
+        #print(f'Best model saved to {filename} with accuracy {accuracy:.4f}')
         return accuracy
     return best_accuracy
 

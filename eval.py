@@ -22,7 +22,7 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
-    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size)
+    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
     print("Number of evaluation batches: ", len(eval_loader))
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
