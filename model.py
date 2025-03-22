@@ -127,7 +127,7 @@ class Trainer:
             if (epoch+1) % 2 == 0:
                 save_checkpoint(self.model, self.optimizer, epoch, epoch_train_loss, eval_accuracy, filename=view+'_ckpt.pth')
                 log_message(f"Checkpoint saved to {view+'_colorid_ckpt.pth'}")
-            log_message("\nTraining complete.")
+        log_message("\nTraining complete.")
 
 
     def load_model(self, ckpt):

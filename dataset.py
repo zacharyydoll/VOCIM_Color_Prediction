@@ -113,7 +113,8 @@ class ImageDataset(Dataset):
         mask = mask.unsqueeze(0)
         
         # concatenate mask with the image to form a 4-channel input
-        image_with_mask = torch.cat([image, mask], dim=0)
+        image_with_mask = torch.cat([image, mask], dim=0) 
+        #image_with_mask = image # TODO: WITHOUT MASK: delete this line and uncomment the above.
 
         x, y, w, h = annotation['bbox']
         sample = {

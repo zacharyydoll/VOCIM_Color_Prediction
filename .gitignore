@@ -8,12 +8,13 @@ data/*
 __pycache__
 split1
 *.pkl
-*.json
 identity.yaml
+data/
+mask_examples/
 !data/newdata_cls_train_vidsplit.json 
 !data/newdata_cls_val_vidsplit.json
 !data/newdata_cls_test_vidsplit.json  
 output.log
-data/
 best_model/
-utils_and_analysis/
+utils_and_analysis/missclassfied_test_imgs/
+model_no_mask/

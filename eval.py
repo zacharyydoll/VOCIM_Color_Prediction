@@ -23,16 +23,16 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
-    print("Number of evaluation batches: ", len(eval_loader))
+    #print("Number of evaluation batches: ", len(eval_loader))
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
     loaded_acc = trainer.load_model(ckpt='top_colorid_best_model.pth')
     print(f"Loaded checkpoint with best accuracy: {loaded_acc}")
 
     #for debugging 
-    for i, sample in enumerate(eval_loader):
-        print(f"Batch {i} contains {sample['image'].size(0)} samples.")
-        break
+    #for i, sample in enumerate(eval_loader):
+    #    print(f"Batch {i} contains {sample['image'].size(0)} samples.")
+    #    break
 
     print("Evaluating model...")
     trainer.evaluate(eval_loader, json_filename='output_top.pkl')

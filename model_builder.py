@@ -45,7 +45,7 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8):
         orig_layer.conv = new_conv
     else:
         # else replace the whole layer.
-        setattr(model.patch_embed, attr_name, new_conv)
+        setattr(model.patch_embed, attr_name, new_conv) 
 
     in_features = model.head.in_features
     model.head = nn.Sequential(

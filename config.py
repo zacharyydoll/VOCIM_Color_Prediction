@@ -2,14 +2,14 @@
 batch_size = 16
 num_epochs = 50
 dropout_rate = 0.3
-learning_rate = 5e-05
+learning_rate = 1e-04
 weight_decay = 0.01
 
 # Smoothing
 smoothing = 0.1
 
 # Mask settings
-sigma_val=13
+sigma_val=13 # was 13
 
 # Scheduler params
 scheduler_factor = 0.5
