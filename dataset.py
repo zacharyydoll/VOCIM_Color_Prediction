@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import Dataset
 import re
 import yaml  
-from config import sigma_val
+from config import sigma_val, use_heatmap_mask
 
 def create_heatmap_mask(image_size, center, sigma=sigma_val):
     """
@@ -21,7 +21,7 @@ def create_heatmap_mask(image_size, center, sigma=sigma_val):
 
 
 class ImageDataset(Dataset):
-    def __init__(self, data_path, img_dir, transform=None, mask_sigma=sigma_val,
+    def __init__(self, data_path, img_dir, transform=None, use_mask=use_heatmap_mask, mask_sigma=sigma_val,
                  bird_identity_yaml="/mydata/vocim/zachary/color_prediction/newdata_bird_identity.yaml",
                  colormap_yaml="/mydata/vocim/zachary/color_prediction/newdata_colormap.yaml"):
         """
@@ -40,6 +40,7 @@ class ImageDataset(Dataset):
         self.annotations = data['annotations']
         self.transform = transform
         self.mask_sigma = mask_sigma
+        self.use_mask = use_mask
 
         # load YAML color mappings
         with open(bird_identity_yaml, "r") as f:
@@ -98,23 +99,25 @@ class ImageDataset(Dataset):
         image = Image.open(img_path).convert("RGB")
         if self.transform:
             image = self.transform(image)  # expected shape: (3, H, W)
-        _, H, W = image.shape
-
-        # Get backpack coordinate from image info if available
-        img_info = self.img_paths[img_idx]
-        backpack_coord = img_info.get("backpack_coord", None)
-        if backpack_coord is None:
-            backpack_coord = (W / 2, H / 2) # should never happen since dataset mod 
-        else:
-            backpack_coord = (float(backpack_coord[0]), float(backpack_coord[1]))
-
-        # Create heatmap mask using the provided backpack coordinate.
-        mask = create_heatmap_mask((H, W), backpack_coord, sigma=self.mask_sigma)
-        mask = mask.unsqueeze(0)
         
-        # concatenate mask with the image to form a 4-channel input
-        image_with_mask = torch.cat([image, mask], dim=0) 
-        #image_with_mask = image # TODO: WITHOUT MASK: delete this line and uncomment the above.
+        if self.use_mask: 
+            _, H, W = image.shape
+
+            # Get backpack coordinate from image info if available
+            img_info = self.img_paths[img_idx]
+            backpack_coord = img_info.get("backpack_coord", None)
+            if backpack_coord is None:
+                backpack_coord = (W / 2, H / 2) # should never happen since dataset mod 
+            else:
+                backpack_coord = (float(backpack_coord[0]), float(backpack_coord[1]))
+
+            # Create heatmap mask using the provided backpack coordinate.
+            mask = create_heatmap_mask((H, W), backpack_coord, sigma=self.mask_sigma)
+            mask = mask.unsqueeze(0)
+            
+            # concatenate mask with the image to form a 4-channel input
+            image_with_mask = torch.cat([image, mask], dim=0) 
+        else: image_with_mask = image 
 
         x, y, w, h = annotation['bbox']
         sample = {

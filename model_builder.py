@@ -1,58 +1,84 @@
-# model_builder.py
 import torch.nn as nn
 import timm
 import torch
+from config import use_heatmap_mask, model_used
+from transformers import ResNetForImageClassification
 
-def build_model(pretrained=True, dropout_rate=0.5, num_classes=8):
-    model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=pretrained)
-
-    # Determine which attribute holds the patch embedding layer.
-    if hasattr(model.patch_embed, 'proj'):
-        attr_name = 'proj'
-    elif hasattr(model.patch_embed, 'projection'):
-        attr_name = 'projection'
-    elif hasattr(model.patch_embed, 'conv'):
-        attr_name = 'conv'
-    elif hasattr(model.patch_embed, 'conv1'):
-        attr_name = 'conv1'
-    else:
-        raise AttributeError("Could not find patch embedding layer.")
-
-    # retrieve original layer
-    orig_layer = getattr(model.patch_embed, attr_name)
-    # If layer is a ConvNorm (wrapper), get underlying conv layer.
-    if hasattr(orig_layer, 'conv'):
-        conv_layer = orig_layer.conv
-    else:
-        conv_layer = orig_layer
-
-    # Get weight shape from the underlying conv layer.
-    C_out, _, k, k = conv_layer.weight.shape
-
-    # create new weight tensor for 4 channels.
-    new_weight = torch.zeros(C_out, 4, k, k)
-    new_weight[:, :3, :, :] = conv_layer.weight
-    new_weight[:, 3:, :, :] = 0.0
+def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels=3):
+    if model_used.lower() == "resnet": 
+        model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50', num_labels=num_classes)
+        # If input channels \ne 3, use mask -> change input_channels = 4 to use mask.
+        if use_heatmap_mask:
+            input_channels = 4
+            orig_conv = model.resnet.conv1
+            new_conv = nn.Conv2d(input_channels,
+                                orig_conv.out_channels,
+                                kernel_size=orig_conv.kernel_size,
+                                stride=orig_conv.stride,
+                                padding=orig_conv.padding,
+                                bias=orig_conv.bias is not None)
+            new_conv.weight.data[:, :3, :, :] = orig_conv.weight.data
+            if input_channels > 3:
+                new_conv.weight.data[:, 3:, :, :] = torch.zeros(new_conv.weight.data[:, 3:, :, :].shape)
+            model.resnet.conv1 = new_conv
+        model.dropout = nn.Dropout(dropout_rate)
+        return model
     
-    # create new Conv2d layer that accepts 4 channels.
-    new_conv = nn.Conv2d(4, C_out, kernel_size=k, stride=conv_layer.stride, padding=conv_layer.padding)
-    new_conv.weight.data = new_weight
-    if conv_layer.bias is not None:
-        new_conv.bias.data = conv_layer.bias.data
+    elif model_used.lower() == "tinyvit":
+    
+        model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=pretrained)
 
-    # update the underlying conv layer inside the wrapper if applicable
-    if hasattr(orig_layer, 'conv'):
-        orig_layer.conv = new_conv
-    else:
-        # else replace the whole layer.
-        setattr(model.patch_embed, attr_name, new_conv) 
+        if use_heatmap_mask:
+            # Determine which attribute holds the patch embedding layer.
+            if hasattr(model.patch_embed, 'proj'):
+                attr_name = 'proj'
+            elif hasattr(model.patch_embed, 'projection'):
+                attr_name = 'projection'
+            elif hasattr(model.patch_embed, 'conv'):
+                attr_name = 'conv'
+            elif hasattr(model.patch_embed, 'conv1'):
+                attr_name = 'conv1'
+            else:
+                raise AttributeError("Could not find patch embedding layer.")
 
-    in_features = model.head.in_features
-    model.head = nn.Sequential(
-        nn.AdaptiveAvgPool2d(1),  
-        nn.Flatten(),            
-        nn.Dropout(dropout_rate),         
-        nn.Linear(model.head.in_features, num_classes) 
-    )
+            # retrieve original layer
+            orig_layer = getattr(model.patch_embed, attr_name)
+            # If layer is a ConvNorm (wrapper), get underlying conv layer.
+            if hasattr(orig_layer, 'conv'):
+                conv_layer = orig_layer.conv
+            else:
+                conv_layer = orig_layer
 
-    return model
+            # Get weight shape from the underlying conv layer.
+            C_out, _, k, k = conv_layer.weight.shape
+
+            # create new weight tensor for 4 channels.
+            new_weight = torch.zeros(C_out, 4, k, k)
+            new_weight[:, :3, :, :] = conv_layer.weight
+            new_weight[:, 3:, :, :] = 0.0
+            
+            # create new Conv2d layer that accepts 4 channels.
+            new_conv = nn.Conv2d(4, C_out, kernel_size=k, stride=conv_layer.stride, padding=conv_layer.padding)
+            new_conv.weight.data = new_weight
+            if conv_layer.bias is not None:
+                new_conv.bias.data = conv_layer.bias.data
+
+            # update the underlying conv layer inside the wrapper if applicable
+            if hasattr(orig_layer, 'conv'):
+                orig_layer.conv = new_conv
+            else:
+                # else replace the whole layer.
+                setattr(model.patch_embed, attr_name, new_conv) 
+
+        in_features = model.head.in_features
+        model.head = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),  
+            nn.Flatten(),            
+            nn.Dropout(dropout_rate),         
+            nn.Linear(model.head.in_features, num_classes) 
+        )
+        return model 
+    
+    else: 
+        raise ValueError(f"Unknown model type specified in config: {model_used}")
+    

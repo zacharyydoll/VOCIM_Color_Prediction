@@ -14,7 +14,7 @@ from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from config import batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, scheduler_factor, scheduler_patience, num_classes, model_name, smoothing, sigma_val
+from config import batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, scheduler_factor, scheduler_patience, num_classes, model_name, smoothing, sigma_val, use_heatmap_mask, model_used
 from model_builder import build_model
                    
 def smooth_cross_entropy(pred, target, smoothing=smoothing):
@@ -56,6 +56,7 @@ def main(train_json_data, eval_json_data, img_dir):
     summary = f"""
     Training Summary:
     ---------------------
+    Using: {model_used}
     Model: {model.__class__.__name__}
     Pretrained: True
     Batch size: {batch_size}
@@ -68,6 +69,7 @@ def main(train_json_data, eval_json_data, img_dir):
     Eval JSON: {eval_json_data}
     Image Directory: {img_dir}
     Smoothing: {smoothing}
+    Use Heatmap Mask: {use_heatmap_mask}
     Mask Sigma: {sigma_val}
     Scheduler: ReduceLROnPlateau, Mode: min, Factor: {scheduler_factor}, Patience: {scheduler_patience}
     ---------------------

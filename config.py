@@ -1,3 +1,6 @@
+# model
+model_used = "resnet" # or "tinyvit"
+
 # settings
 batch_size = 16
 num_epochs = 50
@@ -10,6 +13,7 @@ smoothing = 0.1
 
 # Mask settings
 sigma_val=13 # was 13
+use_heatmap_mask=True
 
 # Scheduler params
 scheduler_factor = 0.5
