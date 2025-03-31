@@ -38,6 +38,8 @@ class Trainer:
         images, labels = images.to(self.device), labels.to(self.device)
 
         outputs = self.model(images)
+        if hasattr(outputs, 'logits'): #remove bloc for TinyViT
+            outputs = outputs.logits
         loss = self.loss(outputs, labels)
         loss.backward()
         self.optimizer.step()
@@ -62,6 +64,8 @@ class Trainer:
 
                 images, labels = images.to(self.device), labels.to(self.device)
                 outputs = self.model(images)
+                if hasattr(outputs, 'logits'): # remove bloc for TinyViT
+                    outputs = outputs.logits
                 loss = self.loss(outputs, labels)
                 total_loss += loss * len(sample)
                 _, preds = torch.max(outputs, 1)

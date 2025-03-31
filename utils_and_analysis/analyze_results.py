@@ -30,7 +30,7 @@ def visualize_misclassified(image_paths, labels, predictions, num_images=5):
     print("Number of misclassified samples:", len(misclassified_indices))
     
     # OP directory for misclassified images
-    output_dir = "/mydata/vocim/zachary/color_prediction/utils_and_analysis/missclassfied_test_imgs"
+    output_dir = "/mydata/vocim/zachary/color_prediction/ResNet50_no_mask/missclassfied_test_imgs"
     os.makedirs(output_dir, exist_ok=True)
     
     # Save the first num_images misclassified examples
@@ -85,7 +85,7 @@ def main():
     print("Classification Report:")
     print(report)
     
-    output_path = "/mydata/vocim/zachary/color_prediction/best_model/classification_report.json"
+    output_path = "/mydata/vocim/zachary/color_prediction/ResNet50_no_mask/classification_report.json"
     save_classification_report(labels, predictions, output_path)
     
     # Visualize a few misclassified examples for error analysis

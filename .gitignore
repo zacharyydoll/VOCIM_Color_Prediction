@@ -17,4 +17,8 @@ mask_examples/
 output.log
 best_model/
 utils_and_analysis/missclassfied_test_imgs/
-model_no_mask/
+TinyViT_no_mask/
+TinyViT_with_mask/
+ResNet50_with_mask/
+ResNet50_no_mask/
+output_examples/

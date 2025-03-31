@@ -2,28 +2,32 @@ import torch.nn as nn
 import timm
 import torch
 from config import use_heatmap_mask, model_used
-from transformers import ResNetForImageClassification
+from transformers import ResNetConfig, ResNetForImageClassification
 
 def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels=3):
     if model_used.lower() == "resnet": 
-        model = ResNetForImageClassification.from_pretrained('microsoft/resnet-50', num_labels=num_classes)
-        # If input channels \ne 3, use mask -> change input_channels = 4 to use mask.
         if use_heatmap_mask:
-            input_channels = 4
-            orig_conv = model.resnet.conv1
-            new_conv = nn.Conv2d(input_channels,
-                                orig_conv.out_channels,
-                                kernel_size=orig_conv.kernel_size,
-                                stride=orig_conv.stride,
-                                padding=orig_conv.padding,
-                                bias=orig_conv.bias is not None)
-            new_conv.weight.data[:, :3, :, :] = orig_conv.weight.data
-            if input_channels > 3:
-                new_conv.weight.data[:, 3:, :, :] = torch.zeros(new_conv.weight.data[:, 3:, :, :].shape)
-            model.resnet.conv1 = new_conv
-        model.dropout = nn.Dropout(dropout_rate)
+            # load default configs, then set num_channels to 4 (for the mask)
+            config = ResNetConfig.from_pretrained('microsoft/resnet-50')
+            config.num_channels = 4
+            model = ResNetForImageClassification.from_pretrained(
+                'microsoft/resnet-50',
+                config=config,
+                ignore_mismatched_sizes=True
+            )
+        else:
+            model = ResNetForImageClassification.from_pretrained(
+                'microsoft/resnet-50',
+                ignore_mismatched_sizes=True
+            )
+        
+        model.classifier = nn.Sequential(
+            nn.Flatten(start_dim=1, end_dim=-1),
+            nn.Dropout(dropout_rate),
+            nn.Linear(in_features=2048, out_features=num_classes, bias=True)
+        )
         return model
-    
+
     elif model_used.lower() == "tinyvit":
     
         model = timm.create_model('tiny_vit_21m_512.dist_in22k_ft_in1k', pretrained=pretrained)

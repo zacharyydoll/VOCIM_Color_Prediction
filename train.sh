@@ -25,6 +25,7 @@ fi
 pip install --quiet matplotlib || true
 pip install --quiet scikit-learn || true
 pip install --quiet pandas || true
+pip install --quiet transformers || true
 
 
 # Define log files
