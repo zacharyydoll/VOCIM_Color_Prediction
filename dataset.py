@@ -65,7 +65,7 @@ class ImageDataset(Dataset):
         if directory not in self.bird_identity_mapping:
             # fallback: try basename
             alt_directory = os.path.basename(directory)
-            if alt_directory in self.bird_identity_mapping:
+            if alt_directory in self.bird_identity_mapping: 
                 directory = alt_directory
             else:
                 raise ValueError(f"Directory {directory} not found in bird identity mapping.")

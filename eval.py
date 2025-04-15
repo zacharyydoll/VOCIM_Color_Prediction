@@ -26,7 +26,7 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     #print("Number of evaluation batches: ", len(eval_loader))
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
-    loaded_acc = trainer.load_model(ckpt='top_colorid_best_model.pth')
+    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/ResNet50_no_mask/top_colorid_best_model.pth')
     print(f"Loaded checkpoint with best accuracy: {loaded_acc}")
 
     #for debugging 
@@ -41,4 +41,3 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
 if __name__=="__main__":
     eval_json_data='/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json' # replace with test set 
     main(eval_json_data = eval_json_data)
-

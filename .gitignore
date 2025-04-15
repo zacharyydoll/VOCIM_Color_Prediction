@@ -22,3 +22,4 @@ TinyViT_with_mask/
 ResNet50_with_mask/
 ResNet50_no_mask/
 output_examples/
+mask_comparisons/
