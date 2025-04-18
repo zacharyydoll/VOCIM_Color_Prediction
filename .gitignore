@@ -2,14 +2,12 @@
 saved_models
 logs
 outputs
-data/*
 !data/newdata_cls_trainvaltest.json
 *.pth
 __pycache__
 split1
 *.pkl
 identity.yaml
-data/
 mask_examples/
 !data/newdata_cls_train_vidsplit.json 
 !data/newdata_cls_val_vidsplit.json
@@ -17,6 +15,8 @@ mask_examples/
 output.log
 best_model/
 utils_and_analysis/missclassfied_test_imgs/
+data/test_set_cooccurrence_matrix.log
+
 TinyViT_no_mask/
 TinyViT_with_mask/
 ResNet50_with_mask/

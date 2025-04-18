@@ -1,0 +1,2925 @@
+{
+  "images": [
+    {
+      "id": 48,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-30_06-07-02_808380_0020000/img04168_bird_1.png",
+      "width": 136,
+      "height": 207,
+      "backpack_coord": [
+        72.95842662176119,
+        119.27333225878397
+      ]
+    },
+    {
+      "id": 61,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-30_06-07-02_808380_0020000/img16516_bird_1.png",
+      "width": 159,
+      "height": 218,
+      "backpack_coord": [
+        67.48031950340373,
+        163.09818920564317
+      ]
+    },
+    {
+      "id": 65,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-30_06-07-02_808380_0020000/img19471_bird_1.png",
+      "width": 195,
+      "height": 202,
+      "backpack_coord": [
+        117.53029817566971,
+        97.36090378535368
+      ]
+    },
+    {
+      "id": 66,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-30_06-07-02_808380_0020000/img19667_bird_1.png",
+      "width": 183,
+      "height": 190,
+      "backpack_coord": [
+        97.11189891633717,
+        101.84299142764621
+      ]
+    },
+    {
+      "id": 67,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img00332_bird_1.png",
+      "width": 105,
+      "height": 242,
+      "backpack_coord": [
+        28.85491489258402,
+        145.19547600204237
+      ]
+    },
+    {
+      "id": 69,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img00332_bird_3.png",
+      "width": 197,
+      "height": 77,
+      "backpack_coord": [
+        80.42540108358367,
+        44.817208237416935
+      ]
+    },
+    {
+      "id": 70,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img00332_bird_4.png",
+      "width": 243,
+      "height": 151,
+      "backpack_coord": [
+        91.47621955308387,
+        96.69466160812544
+      ]
+    },
+    {
+      "id": 74,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img00405_bird_4.png",
+      "width": 249,
+      "height": 142,
+      "backpack_coord": [
+        97.00162878783362,
+        93.93195699075045
+      ]
+    },
+    {
+      "id": 75,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img01047_bird_1.png",
+      "width": 131,
+      "height": 232,
+      "backpack_coord": [
+        73.97909030970823,
+        171.28768627725094
+      ]
+    },
+    {
+      "id": 78,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img01047_bird_4.png",
+      "width": 249,
+      "height": 144,
+      "backpack_coord": [
+        95.46679288929204,
+        91.16925237337523
+      ]
+    },
+    {
+      "id": 81,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img03570_bird_3.png",
+      "width": 180,
+      "height": 142,
+      "backpack_coord": [
+        64.15614055904189,
+        57.09589542575054
+      ]
+    },
+    {
+      "id": 84,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img07164_bird_2.png",
+      "width": 178,
+      "height": 190,
+      "backpack_coord": [
+        92.6298112740451,
+        118.02830791370252
+      ]
+    },
+    {
+      "id": 85,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img07164_bird_3.png",
+      "width": 199,
+      "height": 86,
+      "backpack_coord": [
+        78.18752887110259,
+        55.777090659639725
+      ]
+    },
+    {
+      "id": 88,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img07394_bird_2.png",
+      "width": 194,
+      "height": 172,
+      "backpack_coord": [
+        88.64573336978538,
+        109.31313749813376
+      ]
+    },
+    {
+      "id": 89,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img07394_bird_3.png",
+      "width": 213,
+      "height": 75,
+      "backpack_coord": [
+        85.15966520355755,
+        46.81291537505467
+      ]
+    },
+    {
+      "id": 91,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09435_bird_1.png",
+      "width": 207,
+      "height": 199,
+      "backpack_coord": [
+        108.06811315305231,
+        131.72357570959616
+      ]
+    },
+    {
+      "id": 92,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09435_bird_2.png",
+      "width": 176,
+      "height": 188,
+      "backpack_coord": [
+        73.70544122880983,
+        131.47457084057987
+      ]
+    },
+    {
+      "id": 93,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09435_bird_3.png",
+      "width": 209,
+      "height": 91,
+      "backpack_coord": [
+        79.68155808519987,
+        49.053959196201276
+      ]
+    },
+    {
+      "id": 95,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09507_bird_1.png",
+      "width": 206,
+      "height": 197,
+      "backpack_coord": [
+        104.08403524879168,
+        128.98452215041743
+      ]
+    },
+    {
+      "id": 96,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09507_bird_2.png",
+      "width": 176,
+      "height": 181,
+      "backpack_coord": [
+        79.93056295421593,
+        123.0084052940274
+      ]
+    },
+    {
+      "id": 97,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09507_bird_3.png",
+      "width": 207,
+      "height": 94,
+      "backpack_coord": [
+        78.18752887110236,
+        52.042017624396294
+      ]
+    },
+    {
+      "id": 99,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09845_bird_1.png",
+      "width": 197,
+      "height": 209,
+      "backpack_coord": [
+        94.12384048814329,
+        131.97258057861245
+      ]
+    },
+    {
+      "id": 100,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09845_bird_2.png",
+      "width": 162,
+      "height": 172,
+      "backpack_coord": [
+        74.20345096684287,
+        120.51835660386496
+      ]
+    },
+    {
+      "id": 101,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img09845_bird_3.png",
+      "width": 188,
+      "height": 95,
+      "backpack_coord": [
+        71.71340227667997,
+        57.27111987373746
+      ]
+    },
+    {
+      "id": 103,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10003_bird_1.png",
+      "width": 200,
+      "height": 217,
+      "backpack_coord": [
+        92.13180153601297,
+        132.96860005467738
+      ]
+    },
+    {
+      "id": 104,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10003_bird_2.png",
+      "width": 183,
+      "height": 196,
+      "backpack_coord": [
+        80.926582430282,
+        121.2653712109136
+      ]
+    },
+    {
+      "id": 105,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10003_bird_3.png",
+      "width": 205,
+      "height": 99,
+      "backpack_coord": [
+        71.7134022766802,
+        59.01415395685103
+      ]
+    },
+    {
+      "id": 107,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10058_bird_1.png",
+      "width": 209,
+      "height": 218,
+      "backpack_coord": [
+        97.1118989163383,
+        135.7076536138561
+      ]
+    },
+    {
+      "id": 108,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10058_bird_2.png",
+      "width": 168,
+      "height": 206,
+      "backpack_coord": [
+        76.19548991897227,
+        132.7195951856611
+      ]
+    },
+    {
+      "id": 109,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img10058_bird_3.png",
+      "width": 209,
+      "height": 99,
+      "backpack_coord": [
+        79.68155808519987,
+        59.01415395685103
+      ]
+    },
+    {
+      "id": 111,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img11023_bird_1.png",
+      "width": 201,
+      "height": 218,
+      "backpack_coord": [
+        93.37682588109328,
+        133.21760492369367
+      ]
+    },
+    {
+      "id": 112,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img11023_bird_2.png",
+      "width": 155,
+      "height": 223,
+      "backpack_coord": [
+        63.24723673012795,
+        133.9646195307423
+      ]
+    },
+    {
+      "id": 113,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img11023_bird_3.png",
+      "width": 201,
+      "height": 113,
+      "backpack_coord": [
+        78.43653374011842,
+        59.76116856389967
+      ]
+    },
+    {
+      "id": 115,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img12742_bird_1.png",
+      "width": 223,
+      "height": 227,
+      "backpack_coord": [
+        101.5939865586297,
+        146.91287271958709
+      ]
+    },
+    {
+      "id": 116,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img12742_bird_2.png",
+      "width": 150,
+      "height": 230,
+      "backpack_coord": [
+        57.52012474275398,
+        137.45068769696968
+      ]
+    },
+    {
+      "id": 117,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img12742_bird_3.png",
+      "width": 190,
+      "height": 116,
+      "backpack_coord": [
+        69.47235845553382,
+        66.48430002733858
+      ]
+    },
+    {
+      "id": 119,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img13085_bird_1.png",
+      "width": 222,
+      "height": 223,
+      "backpack_coord": [
+        107.57010341501973,
+        147.65988732663607
+      ]
+    },
+    {
+      "id": 120,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img13085_bird_2.png",
+      "width": 190,
+      "height": 190,
+      "backpack_coord": [
+        94.37284535715844,
+        130.47855136451471
+      ]
+    },
+    {
+      "id": 121,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img13085_bird_3.png",
+      "width": 192,
+      "height": 118,
+      "backpack_coord": [
+        74.70146070487453,
+        66.73330489635464
+      ]
+    },
+    {
+      "id": 123,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14491_bird_1.png",
+      "width": 234,
+      "height": 233,
+      "backpack_coord": [
+        103.08801577272789,
+        157.86908695630234
+      ]
+    },
+    {
+      "id": 124,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14491_bird_2.png",
+      "width": 190,
+      "height": 199,
+      "backpack_coord": [
+        88.14772363175189,
+        132.96860005467715
+      ]
+    },
+    {
+      "id": 125,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14491_bird_3.png",
+      "width": 206,
+      "height": 106,
+      "backpack_coord": [
+        79.18354834716729,
+        56.275100397672304
+      ]
+    },
+    {
+      "id": 127,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14529_bird_1.png",
+      "width": 227,
+      "height": 223,
+      "backpack_coord": [
+        97.11189891633785,
+        152.63998470696072
+      ]
+    },
+    {
+      "id": 128,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14529_bird_2.png",
+      "width": 195,
+      "height": 205,
+      "backpack_coord": [
+        90.13976258388175,
+        135.2096438758233
+      ]
+    },
+    {
+      "id": 129,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img14529_bird_3.png",
+      "width": 202,
+      "height": 108,
+      "backpack_coord": [
+        76.1954899189725,
+        56.52410526668859
+      ]
+    },
+    {
+      "id": 131,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img15530_bird_1.png",
+      "width": 232,
+      "height": 230,
+      "backpack_coord": [
+        107.81910828403625,
+        157.37107721826987
+      ]
+    },
+    {
+      "id": 132,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img15530_bird_2.png",
+      "width": 194,
+      "height": 216,
+      "backpack_coord": [
+        83.66563598945959,
+        136.7036730899208
+      ]
+    },
+    {
+      "id": 133,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img15530_bird_3.png",
+      "width": 203,
+      "height": 102,
+      "backpack_coord": [
+        73.70544122881006,
+        57.022115004720945
+      ]
+    },
+    {
+      "id": 135,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img18116_bird_1.png",
+      "width": 246,
+      "height": 222,
+      "backpack_coord": [
+        116.03626896157266,
+        148.6559068027011
+      ]
+    },
+    {
+      "id": 136,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img18116_bird_2.png",
+      "width": 169,
+      "height": 240,
+      "backpack_coord": [
+        59.014153956851715,
+        143.9248142913923
+      ]
+    },
+    {
+      "id": 137,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img18116_bird_3.png",
+      "width": 186,
+      "height": 104,
+      "backpack_coord": [
+        73.9544460978259,
+        57.27111987373746
+      ]
+    },
+    {
+      "id": 139,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19497_bird_1.png",
+      "width": 247,
+      "height": 220,
+      "backpack_coord": [
+        108.81512776010004,
+        149.65192627876604
+      ]
+    },
+    {
+      "id": 140,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19497_bird_2.png",
+      "width": 204,
+      "height": 212,
+      "backpack_coord": [
+        86.40468954863809,
+        138.69571204205113
+      ]
+    },
+    {
+      "id": 141,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19497_bird_3.png",
+      "width": 199,
+      "height": 110,
+      "backpack_coord": [
+        66.98230976537093,
+        67.97832924143586
+      ]
+    },
+    {
+      "id": 143,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19765_bird_1.png",
+      "width": 250,
+      "height": 221,
+      "backpack_coord": [
+        106.57408393895503,
+        151.1459554928632
+      ]
+    },
+    {
+      "id": 144,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19765_bird_2.png",
+      "width": 224,
+      "height": 209,
+      "backpack_coord": [
+        96.86289404732133,
+        144.42282402942465
+      ]
+    },
+    {
+      "id": 145,
+      "file_name": "VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-23_14-44-16_556681_0380000/img19765_bird_3.png",
+      "width": 203,
+      "height": 103,
+      "backpack_coord": [
+        72.46041688372884,
+        59.51216369488361
+      ]
+    },
+    {
+      "id": 197,
+      "file_name": "VOCIM_copExpBP04_01/labeled-data_topview/BP_2020-10-31_06-07-00_743427_0020000/img00295_bird_2.png",
+      "width": 93,
+      "height": 233,
+      "backpack_coord": [
+        69.34197513264098,
+        157.5545525691973
+      ]
+    },
+    {
+      "id": 198,
+      "file_name": "VOCIM_copExpBP04_01/labeled-data_topview/BP_2020-10-31_06-07-00_743427_0020000/img00327_bird_2.png",
+      "width": 89,
+      "height": 248,
+      "backpack_coord": [
+        74.88334247585453,
+        170.88378752989956
+      ]
+    },
+    {
+      "id": 203,
+      "file_name": "VOCIM_copExpBP04_01/labeled-data_topview/BP_2020-10-31_06-07-00_743427_0020000/img03297_bird_2.png",
+      "width": 96,
+      "height": 237,
+      "backpack_coord": [
+        66.19687474865577,
+        146.17228451286724
+      ]
+    },
+    {
+      "id": 204,
+      "file_name": "VOCIM_copExpBP04_01/labeled-data_topview/BP_2020-10-31_06-07-00_743427_0020000/img05308_bird_2.png",
+      "width": 95,
+      "height": 234,
+      "backpack_coord": [
+        54.66484000737364,
+        159.2019861036656
+      ]
+    },
+    {
+      "id": 205,
+      "file_name": "VOCIM_copExpBP04_01/labeled-data_topview/BP_2020-10-31_06-07-00_743427_0020000/img05478_bird_2.png",
+      "width": 82,
+      "height": 241,
+      "backpack_coord": [
+        50.770906198628836,
+        160.25035289832795
+      ]
+    },
+    {
+      "id": 230,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-11-05_12-31-30_035509_1120000/img00130_bird_8.png",
+      "width": 280,
+      "height": 66,
+      "backpack_coord": [
+        160.1677714007924,
+        38.12867595633202
+      ]
+    },
+    {
+      "id": 240,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-11-05_12-31-30_035509_1120000/img05769_bird_8.png",
+      "width": 113,
+      "height": 155,
+      "backpack_coord": [
+        66.98293124912107,
+        87.12900882712961
+      ]
+    },
+    {
+      "id": 247,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-11-05_12-31-30_035509_1120000/img16465_bird_8.png",
+      "width": 139,
+      "height": 170,
+      "backpack_coord": [
+        111.09299179579375,
+        82.45236133282378
+      ]
+    },
+    {
+      "id": 305,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-12_08-36-16_656375_0320000/img18002_bird_4.png",
+      "width": 220,
+      "height": 172,
+      "backpack_coord": [
+        108.37179175180609,
+        128.30458207401512
+      ]
+    },
+    {
+      "id": 321,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img04461_bird_5.png",
+      "width": 123,
+      "height": 228,
+      "backpack_coord": [
+        53.2111435193583,
+        119.29986971691676
+      ]
+    },
+    {
+      "id": 325,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img06210_bird_5.png",
+      "width": 184,
+      "height": 163,
+      "backpack_coord": [
+        111.14330383402466,
+        81.82890030350791
+      ]
+    },
+    {
+      "id": 326,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img06340_bird_1.png",
+      "width": 35,
+      "height": 199,
+      "backpack_coord": [
+        5.696262650268864,
+        98.57493797395591
+      ]
+    },
+    {
+      "id": 328,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img06706_bird_1.png",
+      "width": 74,
+      "height": 213,
+      "backpack_coord": [
+        12.245400197944491,
+        102.18106165173458
+      ]
+    },
+    {
+      "id": 329,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img06706_bird_5.png",
+      "width": 189,
+      "height": 205,
+      "backpack_coord": [
+        113.06586182768478,
+        100.7524316286408
+      ]
+    },
+    {
+      "id": 330,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img09865_bird_1.png",
+      "width": 91,
+      "height": 199,
+      "backpack_coord": [
+        26.901605242247342,
+        70.77339873766846
+      ]
+    },
+    {
+      "id": 336,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img12149_bird_1.png",
+      "width": 112,
+      "height": 172,
+      "backpack_coord": [
+        49.819629626309734,
+        72.20402542614988
+      ]
+    },
+    {
+      "id": 346,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img16525_bird_1.png",
+      "width": 81,
+      "height": 249,
+      "backpack_coord": [
+        59.29923736194269,
+        151.28537141607853
+      ]
+    },
+    {
+      "id": 348,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-10-26_16-57-09_103718_1880000/img19238_bird_1.png",
+      "width": 191,
+      "height": 158,
+      "backpack_coord": [
+        95.25752570247778,
+        130.05766556619028
+      ]
+    },
+    {
+      "id": 355,
+      "file_name": "VOCIM_juvExpBP03_02/labeled-data_topview/BP_2022-09-13_09-43-46_401113_0640000/img02051_bird_3.png",
+      "width": 191,
+      "height": 163,
+      "backpack_coord": [
+        52.999834926656604,
+        85.16736479543624
+      ]
+    },
+    {
+      "id": 490,
+      "file_name": "VOCIM_copExpBP03_01/labeled-data_topview/BP_2020-10-17_06-00-01_809497_0000000/img14137_bird_1.png",
+      "width": 47,
+      "height": 269,
+      "backpack_coord": [
+        9.111551939938636,
+        157.44761752213753
+      ]
+    },
+    {
+      "id": 498,
+      "file_name": "VOCIM_copExpBP05_02/labeled-data_topview/BP_2020-11-10_15-33-14_271827_1640000/img09338_bird_2.png",
+      "width": 164,
+      "height": 185,
+      "backpack_coord": [
+        83.84274614102605,
+        118.51285468042329
+      ]
+    },
+    {
+      "id": 517,
+      "file_name": "VOCIM_copExpBP05_02/labeled-data_topview/BP_2020-11-09_19-44-54_138142_2360000/img11597_bird_2.png",
+      "width": 225,
+      "height": 140,
+      "backpack_coord": [
+        94.04765957975815,
+        49.817324628882034
+      ]
+    },
+    {
+      "id": 669,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-03-27_07-51-53_151101_0320000/img19088_bird_1.png",
+      "width": 218,
+      "height": 136,
+      "backpack_coord": [
+        84.63120547771132,
+        77.82179814042343
+      ]
+    },
+    {
+      "id": 680,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-15_08-40-49_412007_0460000/img02374_bird_4.png",
+      "width": 170,
+      "height": 169,
+      "backpack_coord": [
+        61.16326990831294,
+        81.32698526270178
+      ]
+    },
+    {
+      "id": 687,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-15_08-40-49_412007_0460000/img04437_bird_3.png",
+      "width": 170,
+      "height": 146,
+      "backpack_coord": [
+        52.761721843984105,
+        79.64667564983574
+      ]
+    },
+    {
+      "id": 691,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-15_08-40-49_412007_0460000/img04965_bird_3.png",
+      "width": 143,
+      "height": 285,
+      "backpack_coord": [
+        47.384731082813914,
+        131.40021172610068
+      ]
+    },
+    {
+      "id": 732,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-23_06-14-01_689797_0040000/img05969_bird_2.png",
+      "width": 158,
+      "height": 200,
+      "backpack_coord": [
+        61.163269908312714,
+        117.62167290060142
+      ]
+    },
+    {
+      "id": 734,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-23_06-14-01_689797_0040000/img08201_bird_2.png",
+      "width": 179,
+      "height": 190,
+      "backpack_coord": [
+        80.9909233401288,
+        116.27742521030882
+      ]
+    },
+    {
+      "id": 736,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-04-23_06-14-01_689797_0040000/img08453_bird_2.png",
+      "width": 129,
+      "height": 172,
+      "backpack_coord": [
+        72.2533133532263,
+        132.07233557124687
+      ]
+    },
+    {
+      "id": 777,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-03-15_09-15-47_013221_0560000/img11597_bird_1.png",
+      "width": 213,
+      "height": 145,
+      "backpack_coord": [
+        113.93919324918306,
+        60.59823335227247
+      ]
+    },
+    {
+      "id": 790,
+      "file_name": "VOCIM_juvExpBP02/labeled-data_topview/BP_2022-03-15_09-15-47_013221_0560000/img17730_bird_5.png",
+      "width": 114,
+      "height": 208,
+      "backpack_coord": [
+        47.17227745985315,
+        93.2559639014014
+      ]
+    },
+    {
+      "id": 796,
+      "file_name": "VOCIM_copExpBP05_01/labeled-data_topview/BP_2020-11-10_17-25-05_271827_1960000/img06372_bird_2.png",
+      "width": 85,
+      "height": 238,
+      "backpack_coord": [
+        49.47525430631276,
+        145.9003439056221
+      ]
+    },
+    {
+      "id": 902,
+      "file_name": "VOCIM_copExpBP02_01/labeled-data_topview/BP_2020-09-01_10-32-40_902909_0780000/img10672_bird_1.png",
+      "width": 327,
+      "height": 119,
+      "backpack_coord": [
+        152.73169427856533,
+        75.8837395184537
+      ]
+    },
+    {
+      "id": 983,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img00150_bird_2.png",
+      "width": 201,
+      "height": 212,
+      "backpack_coord": [
+        108.22861629506701,
+        85.14489044192351
+      ]
+    },
+    {
+      "id": 987,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img02057_bird_2.png",
+      "width": 204,
+      "height": 222,
+      "backpack_coord": [
+        112.39125538333883,
+        90.44279473608754
+      ]
+    },
+    {
+      "id": 989,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img02849_bird_2.png",
+      "width": 201,
+      "height": 220,
+      "backpack_coord": [
+        108.22861629506724,
+        84.38804697132855
+      ]
+    },
+    {
+      "id": 991,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img02900_bird_2.png",
+      "width": 207,
+      "height": 218,
+      "backpack_coord": [
+        112.76967711863654,
+        82.11751655954413
+      ]
+    },
+    {
+      "id": 993,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img03137_bird_2.png",
+      "width": 204,
+      "height": 214,
+      "backpack_coord": [
+        112.39125538333906,
+        79.84698614775948
+      ]
+    },
+    {
+      "id": 995,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img04168_bird_2.png",
+      "width": 178,
+      "height": 222,
+      "backpack_coord": [
+        106.71492935387755,
+        92.33490341257493
+      ]
+    },
+    {
+      "id": 997,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img05223_bird_2.png",
+      "width": 214,
+      "height": 228,
+      "backpack_coord": [
+        110.12072497155441,
+        83.63120350073405
+      ]
+    },
+    {
+      "id": 999,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img05365_bird_2.png",
+      "width": 215,
+      "height": 220,
+      "backpack_coord": [
+        115.79705100101637,
+        78.71172094186704
+      ]
+    },
+    {
+      "id": 1001,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img06372_bird_2.png",
+      "width": 214,
+      "height": 231,
+      "backpack_coord": [
+        108.22861629506701,
+        76.4411905300824
+      ]
+    },
+    {
+      "id": 1003,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img07335_bird_2.png",
+      "width": 215,
+      "height": 225,
+      "backpack_coord": [
+        119.58126835399094,
+        79.46856441246223
+      ]
+    },
+    {
+      "id": 1005,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img07386_bird_2.png",
+      "width": 206,
+      "height": 215,
+      "backpack_coord": [
+        116.55389447161087,
+        70.38644276532341
+      ]
+    },
+    {
+      "id": 1007,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08084_bird_2.png",
+      "width": 201,
+      "height": 230,
+      "backpack_coord": [
+        104.4443989420929,
+        84.0096252360313
+      ]
+    },
+    {
+      "id": 1009,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08317_bird_2.png",
+      "width": 198,
+      "height": 228,
+      "backpack_coord": [
+        105.95808588328305,
+        83.63120350073405
+      ]
+    },
+    {
+      "id": 1011,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08416_bird_2.png",
+      "width": 212,
+      "height": 227,
+      "backpack_coord": [
+        121.0949552951804,
+        77.95487747127208
+      ]
+    },
+    {
+      "id": 1013,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08467_bird_2.png",
+      "width": 204,
+      "height": 225,
+      "backpack_coord": [
+        118.06758141280102,
+        81.3606730889494
+      ]
+    },
+    {
+      "id": 1015,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08829_bird_2.png",
+      "width": 204,
+      "height": 225,
+      "backpack_coord": [
+        116.17547273631362,
+        83.25278176543657
+      ]
+    },
+    {
+      "id": 1017,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img08834_bird_2.png",
+      "width": 210,
+      "height": 227,
+      "backpack_coord": [
+        111.25599017744685,
+        83.63120350073382
+      ]
+    },
+    {
+      "id": 1019,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img09074_bird_2.png",
+      "width": 212,
+      "height": 233,
+      "backpack_coord": [
+        119.20284661869346,
+        90.06437300079006
+      ]
+    },
+    {
+      "id": 1021,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img09556_bird_2.png",
+      "width": 225,
+      "height": 225,
+      "backpack_coord": [
+        130.55549867761601,
+        77.57645573597483
+      ]
+    },
+    {
+      "id": 1023,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img10496_bird_2.png",
+      "width": 217,
+      "height": 220,
+      "backpack_coord": [
+        129.42023347172358,
+        74.92750358889248
+      ]
+    },
+    {
+      "id": 1025,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img10543_bird_2.png",
+      "width": 214,
+      "height": 223,
+      "backpack_coord": [
+        115.79705100101614,
+        71.52170797121585
+      ]
+    },
+    {
+      "id": 1027,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img10915_bird_2.png",
+      "width": 206,
+      "height": 227,
+      "backpack_coord": [
+        116.55389447161087,
+        77.95487747127208
+      ]
+    },
+    {
+      "id": 1029,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img11084_bird_2.png",
+      "width": 212,
+      "height": 222,
+      "backpack_coord": [
+        117.31073794220583,
+        82.87436003013909
+      ]
+    },
+    {
+      "id": 1031,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img11754_bird_2.png",
+      "width": 212,
+      "height": 225,
+      "backpack_coord": [
+        111.63441191274433,
+        83.25278176543611
+      ]
+    },
+    {
+      "id": 1033,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img12030_bird_2.png",
+      "width": 212,
+      "height": 231,
+      "backpack_coord": [
+        117.31073794220606,
+        76.4411905300824
+      ]
+    },
+    {
+      "id": 1035,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img12374_bird_2.png",
+      "width": 209,
+      "height": 220,
+      "backpack_coord": [
+        128.2849682658316,
+        69.25117755943097
+      ]
+    },
+    {
+      "id": 1037,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img12873_bird_2.png",
+      "width": 228,
+      "height": 215,
+      "backpack_coord": [
+        134.71813776588783,
+        66.60222541234907
+      ]
+    },
+    {
+      "id": 1039,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img14316_bird_2.png",
+      "width": 225,
+      "height": 223,
+      "backpack_coord": [
+        122.98706397166688,
+        75.30592532419018
+      ]
+    },
+    {
+      "id": 1041,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img14562_bird_2.png",
+      "width": 217,
+      "height": 231,
+      "backpack_coord": [
+        121.85179876577536,
+        82.11751655954413
+      ]
+    },
+    {
+      "id": 1043,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img14973_bird_2.png",
+      "width": 214,
+      "height": 225,
+      "backpack_coord": [
+        117.68915967750286,
+        75.68434705948766
+      ]
+    },
+    {
+      "id": 1045,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img15138_bird_2.png",
+      "width": 220,
+      "height": 214,
+      "backpack_coord": [
+        124.12232917755932,
+        76.06276879478492
+      ]
+    },
+    {
+      "id": 1047,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img16516_bird_2.png",
+      "width": 226,
+      "height": 225,
+      "backpack_coord": [
+        128.66339000112862,
+        87.0369991184109
+      ]
+    },
+    {
+      "id": 1049,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img17054_bird_2.png",
+      "width": 228,
+      "height": 228,
+      "backpack_coord": [
+        125.25759438345176,
+        77.95487747127231
+      ]
+    },
+    {
+      "id": 1051,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img17409_bird_2.png",
+      "width": 241,
+      "height": 235,
+      "backpack_coord": [
+        138.5023551188624,
+        77.19803400067735
+      ]
+    },
+    {
+      "id": 1053,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img18926_bird_2.png",
+      "width": 217,
+      "height": 231,
+      "backpack_coord": [
+        125.63601611874947,
+        72.65697317710806
+      ]
+    },
+    {
+      "id": 1055,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img19047_bird_2.png",
+      "width": 228,
+      "height": 231,
+      "backpack_coord": [
+        130.93392041291327,
+        74.54908185359523
+      ]
+    },
+    {
+      "id": 1057,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img19371_bird_2.png",
+      "width": 226,
+      "height": 231,
+      "backpack_coord": [
+        128.66339000112862,
+        72.65697317710783
+      ]
+    },
+    {
+      "id": 1059,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img19471_bird_2.png",
+      "width": 222,
+      "height": 233,
+      "backpack_coord": [
+        122.6086422363694,
+        76.81961226537987
+      ]
+    },
+    {
+      "id": 1061,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-07-26_06-53-15_677623_0020000/img19667_bird_2.png",
+      "width": 212,
+      "height": 225,
+      "backpack_coord": [
+        119.20284661869277,
+        71.90012970651287
+      ]
+    },
+    {
+      "id": 1075,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img02461_bird_1.png",
+      "width": 214,
+      "height": 168,
+      "backpack_coord": [
+        83.88922944959359,
+        88.78997481262832
+      ]
+    },
+    {
+      "id": 1079,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img03148_bird_1.png",
+      "width": 223,
+      "height": 180,
+      "backpack_coord": [
+        94.4657402261937,
+        94.84512070902997
+      ]
+    },
+    {
+      "id": 1085,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img03719_bird_3.png",
+      "width": 198,
+      "height": 155,
+      "backpack_coord": [
+        75.68640632580605,
+        66.77096497915704
+      ]
+    },
+    {
+      "id": 1196,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img18550_bird_2.png",
+      "width": 81,
+      "height": 223,
+      "backpack_coord": [
+        24.319936842862262,
+        118.32584656238805
+      ]
+    },
+    {
+      "id": 1206,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19117_bird_4.png",
+      "width": 125,
+      "height": 157,
+      "backpack_coord": [
+        69.21828178353121,
+        49.34141032542266
+      ]
+    },
+    {
+      "id": 1210,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19134_bird_4.png",
+      "width": 131,
+      "height": 167,
+      "backpack_coord": [
+        75.99980263394491,
+        49.57525587198893
+      ]
+    },
+    {
+      "id": 1212,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19245_bird_2.png",
+      "width": 197,
+      "height": 139,
+      "backpack_coord": [
+        71.32289170262516,
+        66.64598077130495
+      ]
+    },
+    {
+      "id": 1213,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19245_bird_3.png",
+      "width": 124,
+      "height": 126,
+      "backpack_coord": [
+        64.54137085221168,
+        21.51379028407041
+      ]
+    },
+    {
+      "id": 1215,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19273_bird_2.png",
+      "width": 170,
+      "height": 151,
+      "backpack_coord": [
+        50.04294696512102,
+        85.82131558971628
+      ]
+    },
+    {
+      "id": 1218,
+      "file_name": "VOCIM_juvExpBP01/labeled-data_topview/BP_2021-06-01_15-05-46_096578_0000000/img19756_bird_2.png",
+      "width": 167,
+      "height": 156,
+      "backpack_coord": [
+        44.89834494066872,
+        81.84594129809443
+      ]
+    }
+  ],
+  "annotations": [
+    {
+      "id": 48,
+      "image_id": 0,
+      "bbox": [
+        0,
+        0,
+        136,
+        207
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 61,
+      "image_id": 1,
+      "bbox": [
+        0,
+        0,
+        159,
+        218
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 65,
+      "image_id": 2,
+      "bbox": [
+        0,
+        0,
+        195,
+        202
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 66,
+      "image_id": 3,
+      "bbox": [
+        0,
+        0,
+        183,
+        190
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 67,
+      "image_id": 4,
+      "bbox": [
+        0,
+        0,
+        105,
+        242
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 69,
+      "image_id": 5,
+      "bbox": [
+        0,
+        0,
+        197,
+        77
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 70,
+      "image_id": 6,
+      "bbox": [
+        0,
+        0,
+        243,
+        151
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 74,
+      "image_id": 7,
+      "bbox": [
+        0,
+        0,
+        249,
+        142
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 75,
+      "image_id": 8,
+      "bbox": [
+        0,
+        0,
+        131,
+        232
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 78,
+      "image_id": 9,
+      "bbox": [
+        0,
+        0,
+        249,
+        144
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 81,
+      "image_id": 10,
+      "bbox": [
+        0,
+        0,
+        180,
+        142
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 84,
+      "image_id": 11,
+      "bbox": [
+        0,
+        0,
+        178,
+        190
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 85,
+      "image_id": 12,
+      "bbox": [
+        0,
+        0,
+        199,
+        86
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 88,
+      "image_id": 13,
+      "bbox": [
+        0,
+        0,
+        194,
+        172
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 89,
+      "image_id": 14,
+      "bbox": [
+        0,
+        0,
+        213,
+        75
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 91,
+      "image_id": 15,
+      "bbox": [
+        0,
+        0,
+        207,
+        199
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 92,
+      "image_id": 16,
+      "bbox": [
+        0,
+        0,
+        176,
+        188
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 93,
+      "image_id": 17,
+      "bbox": [
+        0,
+        0,
+        209,
+        91
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 95,
+      "image_id": 18,
+      "bbox": [
+        0,
+        0,
+        206,
+        197
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 96,
+      "image_id": 19,
+      "bbox": [
+        0,
+        0,
+        176,
+        181
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 97,
+      "image_id": 20,
+      "bbox": [
+        0,
+        0,
+        207,
+        94
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 99,
+      "image_id": 21,
+      "bbox": [
+        0,
+        0,
+        197,
+        209
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 100,
+      "image_id": 22,
+      "bbox": [
+        0,
+        0,
+        162,
+        172
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 101,
+      "image_id": 23,
+      "bbox": [
+        0,
+        0,
+        188,
+        95
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 103,
+      "image_id": 24,
+      "bbox": [
+        0,
+        0,
+        200,
+        217
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 104,
+      "image_id": 25,
+      "bbox": [
+        0,
+        0,
+        183,
+        196
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 105,
+      "image_id": 26,
+      "bbox": [
+        0,
+        0,
+        205,
+        99
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 107,
+      "image_id": 27,
+      "bbox": [
+        0,
+        0,
+        209,
+        218
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 108,
+      "image_id": 28,
+      "bbox": [
+        0,
+        0,
+        168,
+        206
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 109,
+      "image_id": 29,
+      "bbox": [
+        0,
+        0,
+        209,
+        99
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 111,
+      "image_id": 30,
+      "bbox": [
+        0,
+        0,
+        201,
+        218
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 112,
+      "image_id": 31,
+      "bbox": [
+        0,
+        0,
+        155,
+        223
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 113,
+      "image_id": 32,
+      "bbox": [
+        0,
+        0,
+        201,
+        113
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 115,
+      "image_id": 33,
+      "bbox": [
+        0,
+        0,
+        223,
+        227
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 116,
+      "image_id": 34,
+      "bbox": [
+        0,
+        0,
+        150,
+        230
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 117,
+      "image_id": 35,
+      "bbox": [
+        0,
+        0,
+        190,
+        116
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 119,
+      "image_id": 36,
+      "bbox": [
+        0,
+        0,
+        222,
+        223
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 120,
+      "image_id": 37,
+      "bbox": [
+        0,
+        0,
+        190,
+        190
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 121,
+      "image_id": 38,
+      "bbox": [
+        0,
+        0,
+        192,
+        118
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 123,
+      "image_id": 39,
+      "bbox": [
+        0,
+        0,
+        234,
+        233
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 124,
+      "image_id": 40,
+      "bbox": [
+        0,
+        0,
+        190,
+        199
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 125,
+      "image_id": 41,
+      "bbox": [
+        0,
+        0,
+        206,
+        106
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 127,
+      "image_id": 42,
+      "bbox": [
+        0,
+        0,
+        227,
+        223
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 128,
+      "image_id": 43,
+      "bbox": [
+        0,
+        0,
+        195,
+        205
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 129,
+      "image_id": 44,
+      "bbox": [
+        0,
+        0,
+        202,
+        108
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 131,
+      "image_id": 45,
+      "bbox": [
+        0,
+        0,
+        232,
+        230
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 132,
+      "image_id": 46,
+      "bbox": [
+        0,
+        0,
+        194,
+        216
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 133,
+      "image_id": 47,
+      "bbox": [
+        0,
+        0,
+        203,
+        102
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 135,
+      "image_id": 48,
+      "bbox": [
+        0,
+        0,
+        246,
+        222
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 136,
+      "image_id": 49,
+      "bbox": [
+        0,
+        0,
+        169,
+        240
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 137,
+      "image_id": 50,
+      "bbox": [
+        0,
+        0,
+        186,
+        104
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 139,
+      "image_id": 51,
+      "bbox": [
+        0,
+        0,
+        247,
+        220
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 140,
+      "image_id": 52,
+      "bbox": [
+        0,
+        0,
+        204,
+        212
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 141,
+      "image_id": 53,
+      "bbox": [
+        0,
+        0,
+        199,
+        110
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 143,
+      "image_id": 54,
+      "bbox": [
+        0,
+        0,
+        250,
+        221
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 144,
+      "image_id": 55,
+      "bbox": [
+        0,
+        0,
+        224,
+        209
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 145,
+      "image_id": 56,
+      "bbox": [
+        0,
+        0,
+        203,
+        103
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 197,
+      "image_id": 57,
+      "bbox": [
+        0,
+        0,
+        93,
+        233
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 198,
+      "image_id": 58,
+      "bbox": [
+        0,
+        0,
+        89,
+        248
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 203,
+      "image_id": 59,
+      "bbox": [
+        0,
+        0,
+        96,
+        237
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 204,
+      "image_id": 60,
+      "bbox": [
+        0,
+        0,
+        95,
+        234
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 205,
+      "image_id": 61,
+      "bbox": [
+        0,
+        0,
+        82,
+        241
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 230,
+      "image_id": 62,
+      "bbox": [
+        0,
+        0,
+        280,
+        66
+      ],
+      "identity": "bird_8"
+    },
+    {
+      "id": 240,
+      "image_id": 63,
+      "bbox": [
+        0,
+        0,
+        113,
+        155
+      ],
+      "identity": "bird_8"
+    },
+    {
+      "id": 247,
+      "image_id": 64,
+      "bbox": [
+        0,
+        0,
+        139,
+        170
+      ],
+      "identity": "bird_8"
+    },
+    {
+      "id": 305,
+      "image_id": 65,
+      "bbox": [
+        0,
+        0,
+        220,
+        172
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 321,
+      "image_id": 66,
+      "bbox": [
+        0,
+        0,
+        123,
+        228
+      ],
+      "identity": "bird_5"
+    },
+    {
+      "id": 325,
+      "image_id": 67,
+      "bbox": [
+        0,
+        0,
+        184,
+        163
+      ],
+      "identity": "bird_5"
+    },
+    {
+      "id": 326,
+      "image_id": 68,
+      "bbox": [
+        0,
+        0,
+        35,
+        199
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 328,
+      "image_id": 69,
+      "bbox": [
+        0,
+        0,
+        74,
+        213
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 329,
+      "image_id": 70,
+      "bbox": [
+        0,
+        0,
+        189,
+        205
+      ],
+      "identity": "bird_5"
+    },
+    {
+      "id": 330,
+      "image_id": 71,
+      "bbox": [
+        0,
+        0,
+        91,
+        199
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 336,
+      "image_id": 72,
+      "bbox": [
+        0,
+        0,
+        112,
+        172
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 346,
+      "image_id": 73,
+      "bbox": [
+        0,
+        0,
+        81,
+        249
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 348,
+      "image_id": 74,
+      "bbox": [
+        0,
+        0,
+        191,
+        158
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 355,
+      "image_id": 75,
+      "bbox": [
+        0,
+        0,
+        191,
+        163
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 490,
+      "image_id": 76,
+      "bbox": [
+        0,
+        0,
+        47,
+        269
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 498,
+      "image_id": 77,
+      "bbox": [
+        0,
+        0,
+        164,
+        185
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 517,
+      "image_id": 78,
+      "bbox": [
+        0,
+        0,
+        225,
+        140
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 669,
+      "image_id": 79,
+      "bbox": [
+        0,
+        0,
+        218,
+        136
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 680,
+      "image_id": 80,
+      "bbox": [
+        0,
+        0,
+        170,
+        169
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 687,
+      "image_id": 81,
+      "bbox": [
+        0,
+        0,
+        170,
+        146
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 691,
+      "image_id": 82,
+      "bbox": [
+        0,
+        0,
+        143,
+        285
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 732,
+      "image_id": 83,
+      "bbox": [
+        0,
+        0,
+        158,
+        200
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 734,
+      "image_id": 84,
+      "bbox": [
+        0,
+        0,
+        179,
+        190
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 736,
+      "image_id": 85,
+      "bbox": [
+        0,
+        0,
+        129,
+        172
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 777,
+      "image_id": 86,
+      "bbox": [
+        0,
+        0,
+        213,
+        145
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 790,
+      "image_id": 87,
+      "bbox": [
+        0,
+        0,
+        114,
+        208
+      ],
+      "identity": "bird_5"
+    },
+    {
+      "id": 796,
+      "image_id": 88,
+      "bbox": [
+        0,
+        0,
+        85,
+        238
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 902,
+      "image_id": 89,
+      "bbox": [
+        0,
+        0,
+        327,
+        119
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 983,
+      "image_id": 90,
+      "bbox": [
+        0,
+        0,
+        201,
+        212
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 987,
+      "image_id": 91,
+      "bbox": [
+        0,
+        0,
+        204,
+        222
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 989,
+      "image_id": 92,
+      "bbox": [
+        0,
+        0,
+        201,
+        220
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 991,
+      "image_id": 93,
+      "bbox": [
+        0,
+        0,
+        207,
+        218
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 993,
+      "image_id": 94,
+      "bbox": [
+        0,
+        0,
+        204,
+        214
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 995,
+      "image_id": 95,
+      "bbox": [
+        0,
+        0,
+        178,
+        222
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 997,
+      "image_id": 96,
+      "bbox": [
+        0,
+        0,
+        214,
+        228
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 999,
+      "image_id": 97,
+      "bbox": [
+        0,
+        0,
+        215,
+        220
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1001,
+      "image_id": 98,
+      "bbox": [
+        0,
+        0,
+        214,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1003,
+      "image_id": 99,
+      "bbox": [
+        0,
+        0,
+        215,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1005,
+      "image_id": 100,
+      "bbox": [
+        0,
+        0,
+        206,
+        215
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1007,
+      "image_id": 101,
+      "bbox": [
+        0,
+        0,
+        201,
+        230
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1009,
+      "image_id": 102,
+      "bbox": [
+        0,
+        0,
+        198,
+        228
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1011,
+      "image_id": 103,
+      "bbox": [
+        0,
+        0,
+        212,
+        227
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1013,
+      "image_id": 104,
+      "bbox": [
+        0,
+        0,
+        204,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1015,
+      "image_id": 105,
+      "bbox": [
+        0,
+        0,
+        204,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1017,
+      "image_id": 106,
+      "bbox": [
+        0,
+        0,
+        210,
+        227
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1019,
+      "image_id": 107,
+      "bbox": [
+        0,
+        0,
+        212,
+        233
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1021,
+      "image_id": 108,
+      "bbox": [
+        0,
+        0,
+        225,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1023,
+      "image_id": 109,
+      "bbox": [
+        0,
+        0,
+        217,
+        220
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1025,
+      "image_id": 110,
+      "bbox": [
+        0,
+        0,
+        214,
+        223
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1027,
+      "image_id": 111,
+      "bbox": [
+        0,
+        0,
+        206,
+        227
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1029,
+      "image_id": 112,
+      "bbox": [
+        0,
+        0,
+        212,
+        222
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1031,
+      "image_id": 113,
+      "bbox": [
+        0,
+        0,
+        212,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1033,
+      "image_id": 114,
+      "bbox": [
+        0,
+        0,
+        212,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1035,
+      "image_id": 115,
+      "bbox": [
+        0,
+        0,
+        209,
+        220
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1037,
+      "image_id": 116,
+      "bbox": [
+        0,
+        0,
+        228,
+        215
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1039,
+      "image_id": 117,
+      "bbox": [
+        0,
+        0,
+        225,
+        223
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1041,
+      "image_id": 118,
+      "bbox": [
+        0,
+        0,
+        217,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1043,
+      "image_id": 119,
+      "bbox": [
+        0,
+        0,
+        214,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1045,
+      "image_id": 120,
+      "bbox": [
+        0,
+        0,
+        220,
+        214
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1047,
+      "image_id": 121,
+      "bbox": [
+        0,
+        0,
+        226,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1049,
+      "image_id": 122,
+      "bbox": [
+        0,
+        0,
+        228,
+        228
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1051,
+      "image_id": 123,
+      "bbox": [
+        0,
+        0,
+        241,
+        235
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1053,
+      "image_id": 124,
+      "bbox": [
+        0,
+        0,
+        217,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1055,
+      "image_id": 125,
+      "bbox": [
+        0,
+        0,
+        228,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1057,
+      "image_id": 126,
+      "bbox": [
+        0,
+        0,
+        226,
+        231
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1059,
+      "image_id": 127,
+      "bbox": [
+        0,
+        0,
+        222,
+        233
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1061,
+      "image_id": 128,
+      "bbox": [
+        0,
+        0,
+        212,
+        225
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1075,
+      "image_id": 129,
+      "bbox": [
+        0,
+        0,
+        214,
+        168
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 1079,
+      "image_id": 130,
+      "bbox": [
+        0,
+        0,
+        223,
+        180
+      ],
+      "identity": "bird_1"
+    },
+    {
+      "id": 1085,
+      "image_id": 131,
+      "bbox": [
+        0,
+        0,
+        198,
+        155
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 1196,
+      "image_id": 132,
+      "bbox": [
+        0,
+        0,
+        81,
+        223
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1206,
+      "image_id": 133,
+      "bbox": [
+        0,
+        0,
+        125,
+        157
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 1210,
+      "image_id": 134,
+      "bbox": [
+        0,
+        0,
+        131,
+        167
+      ],
+      "identity": "bird_4"
+    },
+    {
+      "id": 1212,
+      "image_id": 135,
+      "bbox": [
+        0,
+        0,
+        197,
+        139
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1213,
+      "image_id": 136,
+      "bbox": [
+        0,
+        0,
+        124,
+        126
+      ],
+      "identity": "bird_3"
+    },
+    {
+      "id": 1215,
+      "image_id": 137,
+      "bbox": [
+        0,
+        0,
+        170,
+        151
+      ],
+      "identity": "bird_2"
+    },
+    {
+      "id": 1218,
+      "image_id": 138,
+      "bbox": [
+        0,
+        0,
+        167,
+        156
+      ],
+      "identity": "bird_2"
+    }
+  ]
+}
