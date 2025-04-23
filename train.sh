@@ -22,10 +22,15 @@ fi
 
 # ----- Python Setup -----
 # Only install if not already present (quiet mode)
-pip install --quiet matplotlib || true
-pip install --quiet scikit-learn || true
-pip install --quiet pandas || true
-pip install --quiet transformers || true
+echo "Checking Python dependencies..."
+while IFS= read -r package; do
+    # Extract package name (remove version constraints)
+    pkg_name=$(echo "$package" | sed -E 's/[<>=].*$//')
+    if ! pip show "$pkg_name" &>/dev/null; then
+        echo "Installing $pkg_name..."
+        pip install --quiet "$package" || true
+    fi
+done < requirements.txt
 
 
 # Define log files

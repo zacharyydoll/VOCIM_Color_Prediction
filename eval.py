@@ -8,36 +8,55 @@ from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 from config import batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, scheduler_factor, scheduler_patience, num_classes, model_name
 from model_builder import build_model
+from tqdm import tqdm
+import pickle
+from evaluation_metrics import ModelEvaluator
+from utils import load_checkpoint
 
 
 def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     eval_batch_size = 32
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    print("Creating model...")
     model = build_model(pretrained=True, dropout_rate=dropout_rate, num_classes=num_classes)
     model = model.to(device)
-    print("Model created.")
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
-    #print("Number of evaluation batches: ", len(eval_loader))
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
-    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/ResNet50_with_mask/top_colorid_best_model.pth')
-    print(f"Loaded checkpoint with best accuracy: {loaded_acc}")
+    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/ResNet50_no_mask/top_colorid_best_model.pth')
 
-    #for debugging 
-    #for i, sample in enumerate(eval_loader):
-    #    print(f"Batch {i} contains {sample['image'].size(0)} samples.")
-    #    break
+    metrics = evaluate_model(model, eval_loader, device, num_classes)
+    
+    # Save metrics to file
+    with open('evaluation_metrics.pkl', 'wb') as f:
+        pickle.dump(metrics, f)
+    
+    return metrics
 
-    print("Evaluating model...")
-    trainer.evaluate(eval_loader, json_filename='output_top.pkl')
-    print("Evaluation complete.")
+def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None):
+    if checkpoint_path:
+        model, _ = load_checkpoint(model, checkpoint_path)
+    
+    model.eval()
+    evaluator = ModelEvaluator(num_classes)
+    
+    with torch.no_grad():
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            images = batch['image'].to(device)
+            labels = batch['label'].to(device)
+            
+            outputs = model(images)
+            if hasattr(outputs, 'logits'):
+                outputs = outputs.logits
+            
+            evaluator.update(outputs, labels)
+    
+    return evaluator.compute_metrics()
 
 if __name__=="__main__":
-    eval_json_data='/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json' # replace with test set 
+    eval_json_data='/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json'
     main(eval_json_data = eval_json_data)

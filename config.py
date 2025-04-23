@@ -1,5 +1,5 @@
 # model
-model_used = "resnet" # "tinyvit" or "resnet"
+model_used = "tinyvit" # "tinyvit" or "resnet"
 
 # settings
 batch_size = 16
@@ -22,3 +22,19 @@ scheduler_patience = 3
 # Model params
 num_classes = 8
 model_name = 'tiny_vit_21m_512.dist_in22k_ft_in1k'
+
+# GLAN configuration
+use_glan = True
+glan_node_dim = 512  # Should match TinyViT embedding dimension
+glan_edge_dim = 512  # Dimension for edge features
+glan_hidden_dim = 512  # Hidden dimension for graph layers
+glan_num_layers = 3  # Number of graph network blocks
+glan_dropout = 0.1  # Dropout rate for graph layers
+
+# Evaluation metrics configuration
+compute_confusion_matrix = True
+compute_class_metrics = True
+compute_roc_auc = True
+compute_f1_score = True
+compute_precision_recall = True
+compute_graph_metrics = True  # New flag for graph-specific metrics
