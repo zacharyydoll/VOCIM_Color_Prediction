@@ -8,6 +8,7 @@ from config import (
 from transformers import ResNetConfig, ResNetForImageClassification
 from glan import GLAN
 from torch_geometric.data import Data, Batch
+import torch.nn.functional as F
 
 def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels=3):
     if model_used.lower() == "resnet": 
@@ -80,14 +81,13 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
 
         if use_glan:
             # Get the embedding dimension from the first attention block in stage 1
-            # Stage 0 uses MBConv blocks, stage 1 onwards use attention blocks
             embed_dim = model.stages[1].blocks[0].attn.qkv.in_features
             
-            # Create GLAN module
+            # Create GLAN module with adjusted dimensions
             glan = GLAN(
-                node_dim=embed_dim,
-                edge_dim=embed_dim,
-                hidden_dim=glan_hidden_dim,
+                node_dim=576,        # Match the TinyViT output channels
+                edge_dim=1,          # Edge attributes are scalar cosine similarities
+                hidden_dim=576,      # Keep same dimension throughout
                 num_layers=glan_num_layers
             )
             
@@ -103,42 +103,70 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                 
                 # Convert features to graph format
                 B, C, H, W = features.shape
+                
+                # Downsample features to reduce graph size
+                if H > 16 or W > 16:
+                    features = F.interpolate(features, size=(16, 16), mode='bilinear', align_corners=False)
+                    H, W = 16, 16
+                
                 features = features.flatten(2).transpose(1, 2)  # B, N, C
                 
-                # Create graph data for each image in batch
-                graph_data_list = []
-                for b in range(B):
-                    # Create fully connected graph
-                    num_nodes = H * W
-                    edge_index = []
-                    edge_attr = []
-                    for i in range(num_nodes):
-                        for j in range(num_nodes):
-                            edge_index.append([i, j])
-                            # Compute edge attributes based on feature similarity
-                            edge_attr.append(torch.cosine_similarity(
-                                features[b, i].unsqueeze(0),
-                                features[b, j].unsqueeze(0)
-                            ))
-                    # Move tensors to the same device as input
-                    edge_index = torch.tensor(edge_index, dtype=torch.long, device=x.device).t()
-                    edge_attr = torch.tensor(edge_attr, dtype=torch.float32, device=x.device)
+                # Create grid graph (each node connected to its neighbors)
+                num_nodes = H * W
+                
+                # Pre-compute edge indices for grid graph
+                edge_index = []
+                for i in range(H):
+                    for j in range(W):
+                        current_idx = i * W + j
+                        # Connect to right neighbor
+                        if j < W - 1:
+                            right_idx = i * W + (j + 1)
+                            edge_index.append([current_idx, right_idx])
+                            edge_index.append([right_idx, current_idx])
+                        # Connect to bottom neighbor
+                        if i < H - 1:
+                            bottom_idx = (i + 1) * W + j
+                            edge_index.append([current_idx, bottom_idx])
+                            edge_index.append([bottom_idx, current_idx])
+                
+                edge_index = torch.tensor(edge_index, dtype=torch.long, device=x.device).t()
+                
+                # Process in smaller chunks to save memory
+                chunk_size = 4  # Process 4 images at a time
+                graph_features_list = []
+                
+                for b_start in range(0, B, chunk_size):
+                    b_end = min(b_start + chunk_size, B)
+                    current_batch = features[b_start:b_end]
                     
-                    # Create graph data
-                    graph_data = Data(
-                        x=features[b],  # N x C
-                        edge_index=edge_index,
-                        edge_attr=edge_attr,
-                        batch=torch.zeros(num_nodes, dtype=torch.long, device=x.device)
-                    )
-                    graph_data_list.append(graph_data)
+                    # Create graph data for current chunk
+                    graph_data_list = []
+                    for b in range(b_end - b_start):
+                        # Compute edge attributes efficiently using matrix operations
+                        src_features = current_batch[b, edge_index[0]]
+                        dst_features = current_batch[b, edge_index[1]]
+                        edge_attr = F.cosine_similarity(src_features, dst_features, dim=1)
+                        
+                        graph_data = Data(
+                            x=current_batch[b],
+                            edge_index=edge_index,
+                            edge_attr=edge_attr.unsqueeze(-1),
+                            batch=torch.full((num_nodes,), b, dtype=torch.long, device=x.device)
+                        )
+                        graph_data_list.append(graph_data)
+                    
+                    # Process current chunk through GLAN
+                    batch = Batch.from_data_list(graph_data_list)
+                    chunk_features = model.glan(batch)
+                    
+                    # Reshape GLAN output back to original format
+                    chunk_features = chunk_features.view(b_end - b_start, H, W, -1).permute(0, 3, 1, 2)
+                    graph_features_list.append(chunk_features)
                 
-                # Process through GLAN
-                batch = Batch.from_data_list(graph_data_list)
-                graph_features = model.glan(batch)
+                # Combine all chunks
+                graph_features = torch.cat(graph_features_list, dim=0)
                 
-                # Reshape back to original format
-                graph_features = graph_features.view(B, H, W, -1).permute(0, 3, 1, 2)  # B, C, H, W
                 return graph_features
             
             model.forward_features = new_forward_features

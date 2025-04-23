@@ -86,26 +86,22 @@ class GLAN(nn.Module):
         self.pred_head = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, 1)
+            nn.Linear(hidden_dim, node_dim)  # Output should match input dimension
         )
         
     def forward(self, data):
         x, edge_index, edge_attr, batch = data.x, data.edge_index, data.edge_attr, data.batch
         
         # Encode initial features
-        x = self.node_encoder(x)
-        edge_attr = self.edge_encoder(edge_attr)
-        u = torch.zeros((batch.max().item() + 1, x.size(1)), device=x.device)
+        x = self.node_encoder(x)  # [total_nodes, hidden_dim]
+        edge_attr = self.edge_encoder(edge_attr)  # [total_edges, hidden_dim]
+        u = torch.zeros((batch.max().item() + 1, x.size(1)), device=x.device)  # [batch_size, hidden_dim]
         
         # Process through graph network blocks
         for i in range(self.num_layers):
             x, edge_attr, u = self.gn_blocks[i](x, edge_index, edge_attr, u, batch)
             
-        # Global pooling and prediction
-        x = torch.zeros_like(u)
-        x = x.scatter_add_(0, batch.unsqueeze(-1).expand(-1, u.size(1)), x)
-        counts = torch.zeros_like(u)
-        counts = counts.scatter_add_(0, batch.unsqueeze(-1).expand(-1, u.size(1)), torch.ones_like(x))
-        x = x / (counts + 1e-6)
+        # Process each graph in the batch separately
+        x = self.pred_head(x)  # [total_nodes, node_dim]
         
-        return self.pred_head(x).squeeze(-1) 
+        return x  # Return node features for each node in the batch 
