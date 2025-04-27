@@ -66,7 +66,7 @@ def save_classification_report(labels, predictions, output_path):
 def main():
     # results file name from eval.py
     #results_file = "../output_top.pkl"
-    results_file = "/mydata/vocim/zachary/color_prediction/mask_comparisons/resnet50/resnet_with_mask_ambig_set.pkl"
+    results_file = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/evaluation_metrics.pkl"
     
     results = load_results(results_file)
     
@@ -86,11 +86,11 @@ def main():
     print("Classification Report:")
     print(report)
     
-    output_path = "/mydata/vocim/zachary/color_prediction/mask_comparisons/resnet50/resnet_report_with_mask.json"
+    output_path = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/normal_test_set_report.json"
     save_classification_report(labels, predictions, output_path)
     
     # Visualize a few misclassified examples for error analysis
-    visualize_misclassified(image_paths, labels, predictions, num_images=10)
+    #visualize_misclassified(image_paths, labels, predictions, num_images=10)
 
 if __name__=="__main__":
     main()

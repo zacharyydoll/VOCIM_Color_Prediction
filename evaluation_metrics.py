@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from sklearn.metrics import (
     confusion_matrix, classification_report, roc_auc_score,
-    precision_recall_curve, average_precision_score, f1_score
+    precision_recall_curve, average_precision_score, f1_score, accuracy_score
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,6 +13,11 @@ from config import (
     compute_roc_auc, compute_f1_score, compute_precision_recall,
     compute_graph_metrics
 )
+import pickle
+import os
+
+EVAL_RESULTS_DIR = 'eval_results'
+os.makedirs(EVAL_RESULTS_DIR, exist_ok=True)
 
 class ModelEvaluator:
     def __init__(self, num_classes):
@@ -81,6 +86,9 @@ class ModelEvaluator:
                 self._plot_edge_weight_distribution()
                 metrics['edge_metrics'] = self._compute_edge_metrics()
 
+        accuracy = accuracy_score(self.labels, self.predictions)
+        metrics['accuracy'] = accuracy
+
         return metrics
 
     def _plot_confusion_matrix(self, cm):
@@ -89,7 +97,7 @@ class ModelEvaluator:
         plt.title('Confusion Matrix')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
-        plt.savefig('confusion_matrix.png')
+        plt.savefig(os.path.join(EVAL_RESULTS_DIR, 'confusion_matrix.png'))
         plt.close()
 
     def _plot_precision_recall_curve(self):
@@ -104,7 +112,7 @@ class ModelEvaluator:
         plt.ylabel('Precision')
         plt.title('Precision-Recall Curve')
         plt.legend()
-        plt.savefig('precision_recall_curve.png')
+        plt.savefig(os.path.join(EVAL_RESULTS_DIR, 'precision_recall_curve.png'))
         plt.close()
 
     def _visualize_graph_structure(self):
@@ -193,4 +201,21 @@ class ModelEvaluator:
         self.labels = []
         self.probabilities = []
         self.graph_data = []
-        self.edge_weights = [] 
+        self.edge_weights = []
+
+if __name__ == '__main__':
+    import pickle
+    import os
+    EVAL_RESULTS_DIR = 'eval_results'
+    pkl_path = os.path.join(EVAL_RESULTS_DIR, 'evaluation_metrics.pkl')
+    try:
+        with open(pkl_path, 'rb') as f:
+            metrics = pickle.load(f)
+
+        log_path = os.path.join(EVAL_RESULTS_DIR, 'evaluation_metrics.log')
+        with open(log_path, 'w') as log_file:
+            for key, value in metrics.items():
+                log_file.write(f"{key}: {value}\n\n")
+        print(f"All metrics saved to {log_path}")
+    except FileNotFoundError:
+        print(f"{pkl_path} not found. Please run eval.py first to generate it.")

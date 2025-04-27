@@ -1,7 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 
-log_file = "../logs/output_summary.log"
+log_file = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/output_summary.log"
 output_file = "accuracy.png"
 
 train_accuracy = {}

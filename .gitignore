@@ -19,8 +19,10 @@ data/test_set_cooccurrence_matrix.log
 
 TinyViT_no_mask/
 TinyViT_with_mask/
+TinyViT_with_mask_GLAN/
 ResNet50_with_mask/
 ResNet50_no_mask/
 output_examples/
-mask_comparisons/
+ambig_subst_comparisons/
 init_git.sh
+eval_results/

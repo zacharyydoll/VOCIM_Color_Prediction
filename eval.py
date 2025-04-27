@@ -12,6 +12,7 @@ from tqdm import tqdm
 import pickle
 from evaluation_metrics import ModelEvaluator
 from utils import load_checkpoint
+import os
 
 
 def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
@@ -27,13 +28,19 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
-    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/ResNet50_no_mask/top_colorid_best_model.pth')
+    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/top_colorid_best_model.pth')
 
     metrics = evaluate_model(model, eval_loader, device, num_classes)
     
-    # Save metrics to file
-    with open('evaluation_metrics.pkl', 'wb') as f:
+    # Save metrics to eval_results directory
+    os.makedirs('eval_results', exist_ok=True)
+    pkl_path = os.path.join('eval_results', 'evaluation_metrics.pkl')
+    with open(pkl_path, 'wb') as f:
         pickle.dump(metrics, f)
+    
+    # Call evaluation_metrics.py to generate the .log file and images
+    import subprocess
+    subprocess.run(['python3', 'evaluation_metrics.py'])
     
     return metrics
 
@@ -58,5 +65,5 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
     return evaluator.compute_metrics()
 
 if __name__=="__main__":
-    eval_json_data='/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json'
+    eval_json_data='/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json'
     main(eval_json_data = eval_json_data)

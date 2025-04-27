@@ -79,16 +79,15 @@ class Trainer:
                 results['image_paths'].extend(image_path)
                 results['bboxes'].extend(bbox.cpu().numpy().tolist())
 
-                # Update evaluator with graph data if using GLAN
+                # Update evaluator if using GLAN
                 if use_glan:
-                    graph_data = self.model.glan.graph_data if hasattr(self.model, 'glan') else None
-                    self.evaluator.update(outputs, labels, graph_data)
+                    self.evaluator.update(outputs, labels)
 
         loss_avg = total_loss / len(dataloader)
         accuracy = accuracy_score(results['predictions'], results['labels'])
         print(f'Accuracy: {accuracy:.4f} Loss: {loss_avg:.4f}')
 
-        # Compute and log graph metrics if using GLAN
+        # Compute and log metrics if using GLAN
         if use_glan and compute_graph_metrics:
             metrics = self.evaluator.compute_metrics()
             if 'graph_metrics' in metrics:

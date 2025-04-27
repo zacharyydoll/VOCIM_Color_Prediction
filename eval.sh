@@ -24,6 +24,18 @@ trap 'error_handler $LINENO' ERR  # Trap any error, write the error line to erro
 conda activate /myhome/mambaforge/envs/mmpose
 apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
+# ----- Python Setup -----
+# Only install if not already present (quiet mode)
+echo "Checking Python dependencies..."
+while IFS= read -r package; do
+    # Extract package name (remove version constraints)
+    pkg_name=$(echo "$package" | sed -E 's/[<>=].*$//')
+    if ! pip show "$pkg_name" &>/dev/null; then
+        echo "Installing $pkg_name..."
+        pip install --quiet "$package" || true
+    fi
+done < requirements.txt
+
 # Step 3: Run the Python script and log output to train.log
 python eval.py 2>&1 | tee $LOG_FILE
 

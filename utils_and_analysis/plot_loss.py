@@ -1,7 +1,7 @@
 import re
 import matplotlib.pyplot as plt
 
-training_log_path = "../logs/output_summary.log"
+training_log_path = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/output_summary.log"
 output_file = "loss.png"
 
 with open(training_log_path, "r") as f:
