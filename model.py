@@ -17,8 +17,10 @@ import pdb
 
 def log_message(message, log_file="logs/output_summary.log"):
     print(message)
-    with open(log_file, "a") as f:
-        f.write(message + "\n")
+    # Write to both the specified log file and the summary log
+    for log_path in [log_file, "logs/output_summary.log"]:
+        with open(log_path, "a") as f:
+            f.write(message + "\n")
 
 # Function to classify an image
 class Trainer:

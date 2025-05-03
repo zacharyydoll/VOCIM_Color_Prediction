@@ -18,7 +18,7 @@ from dataloader import get_eval_dataloder, get_train_dataloder
 from config import (
     use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
     scheduler_factor, scheduler_patience, num_classes, model_name,
-    smoothing, sigma_val, use_heatmap_mask, model_used
+    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout
 )
 from model_builder import build_model
                    
@@ -44,7 +44,8 @@ def main(train_json_data, eval_json_data, img_dir):
 
     summary = f"""
     Training Summary:
-    ---------------------
+    ----------------------------------------
+    Device: {device}
     Using: {model_used}
     Model: {model.__class__.__name__}
     Pretrained: True
@@ -52,17 +53,21 @@ def main(train_json_data, eval_json_data, img_dir):
     Number of epochs: {num_epochs}
     Learning Rate: {optimizer.param_groups[0]['lr']}
     Weight Decay: {optimizer.defaults.get('weight_decay', 'N/A')}
-    Dropout Rate: {dropout_rate}
-    Using GLAN: {use_glan}
-    Device: {device}
+
     Train JSON: {train_json_data}
     Eval JSON: {eval_json_data}
     Image Directory: {img_dir}
+
+    Dropout Rate: {dropout_rate}
+
+    Using GLAN: {use_glan}
+    GLAN Dropout Rate: {glan_dropout}
+
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
     Mask Sigma: {sigma_val}
     Scheduler: ReduceLROnPlateau, Mode: min, Factor: {scheduler_factor}, Patience: {scheduler_patience}
-    ---------------------
+    ----------------------------------------
     """
     print(summary)
     os.makedirs("logs", exist_ok=True)

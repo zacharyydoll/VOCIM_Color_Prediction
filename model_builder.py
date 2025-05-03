@@ -3,7 +3,7 @@ import timm
 import torch
 from config import (
     use_heatmap_mask, model_used, use_glan,
-    glan_hidden_dim, glan_num_layers
+    glan_hidden_dim, glan_num_layers, glan_dropout_rate
 )
 from transformers import ResNetConfig, ResNetForImageClassification
 from glan import GLAN
@@ -88,7 +88,8 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                 node_dim=576,        # Match the TinyViT output channels
                 edge_dim=1,          # Edge attributes are scalar cosine similarities
                 hidden_dim=576,      # Keep same dimension throughout
-                num_layers=glan_num_layers
+                num_layers=glan_num_layers,
+                dropout=glan_dropout_rate
             )
             
             # Store GLAN in the model

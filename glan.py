@@ -2,15 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import MetaLayer
-from config import glan_dropout
 
 class EdgeModel(nn.Module):
-    def __init__(self, node_dim, edge_dim, hidden_dim):
+    def __init__(self, node_dim, edge_dim, hidden_dim, dropout):
         super().__init__()
         self.edge_mlp = nn.Sequential(
             nn.Linear(2 * node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
-            nn.Dropout(glan_dropout),
+            nn.Dropout(dropout),
             nn.Linear(hidden_dim, edge_dim)
         )
         
@@ -19,12 +18,12 @@ class EdgeModel(nn.Module):
         return self.edge_mlp(out)
 
 class NodeModel(nn.Module):
-    def __init__(self, node_dim, edge_dim, hidden_dim):
+    def __init__(self, node_dim, edge_dim, hidden_dim, dropout):
         super().__init__()
         self.node_mlp = nn.Sequential(
             nn.Linear(node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
-            nn.Dropout(glan_dropout),
+            nn.Dropout(dropout),
             nn.Linear(hidden_dim, node_dim)
         )
         
@@ -36,12 +35,12 @@ class NodeModel(nn.Module):
         return self.node_mlp(out)
 
 class GlobalModel(nn.Module):
-    def __init__(self, node_dim, edge_dim, hidden_dim):
+    def __init__(self, node_dim, edge_dim, hidden_dim, dropout):
         super().__init__()
         self.global_mlp = nn.Sequential(
             nn.Linear(node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
-            nn.Dropout(glan_dropout),
+            nn.Dropout(dropout),
             nn.Linear(hidden_dim, edge_dim)
         )
         
@@ -60,19 +59,19 @@ class GlobalModel(nn.Module):
         return self.global_mlp(out)
 
 class GNBlock(nn.Module):
-    def __init__(self, node_dim, edge_dim, hidden_dim):
+    def __init__(self, node_dim, edge_dim, hidden_dim, dropout):
         super().__init__()
         self.gn = MetaLayer(
-            edge_model=EdgeModel(node_dim, edge_dim, hidden_dim),
-            node_model=NodeModel(node_dim, edge_dim, hidden_dim),
-            global_model=GlobalModel(node_dim, edge_dim, hidden_dim)
+            edge_model=EdgeModel(node_dim, edge_dim, hidden_dim, dropout),
+            node_model=NodeModel(node_dim, edge_dim, hidden_dim, dropout),
+            global_model=GlobalModel(node_dim, edge_dim, hidden_dim, dropout)
         )
         
     def forward(self, x, edge_index, edge_attr, u, batch):
         return self.gn(x, edge_index, edge_attr, u, batch)
 
 class GLAN(nn.Module):
-    def __init__(self, node_dim, edge_dim, hidden_dim, num_layers=3):
+    def __init__(self, node_dim, edge_dim, hidden_dim, num_layers=3, dropout=0.1):
         super().__init__()
         self.num_layers = num_layers
         
@@ -82,7 +81,7 @@ class GLAN(nn.Module):
         
         # Graph network blocks
         self.gn_blocks = nn.ModuleList([
-            GNBlock(hidden_dim, hidden_dim, hidden_dim)
+            GNBlock(hidden_dim, hidden_dim, hidden_dim, dropout)
             for _ in range(num_layers)
         ])
         
@@ -90,7 +89,7 @@ class GLAN(nn.Module):
         self.pred_head = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Dropout(glan_dropout),
+            nn.Dropout(dropout),
             nn.Linear(hidden_dim, node_dim)  # Output should match input dimension
         )
         
@@ -98,15 +97,15 @@ class GLAN(nn.Module):
         x, edge_index, edge_attr, batch = data.x, data.edge_index, data.edge_attr, data.batch
         
         # Encode initial features
-        x = self.node_encoder(x)  # [total_nodes, hidden_dim]
-        edge_attr = self.edge_encoder(edge_attr)  # [total_edges, hidden_dim]
-        u = torch.zeros((batch.max().item() + 1, x.size(1)), device=x.device)  # [batch_size, hidden_dim]
+        x = self.node_encoder(x)
+        edge_attr = self.edge_encoder(edge_attr)
         
         # Process through graph network blocks
+        u = torch.zeros((batch.max().item() + 1, x.size(1)), device=x.device)
         for i in range(self.num_layers):
             x, edge_attr, u = self.gn_blocks[i](x, edge_index, edge_attr, u, batch)
-            
-        # Process each graph in the batch separately
-        x = self.pred_head(x)  # [total_nodes, node_dim]
         
-        return x  # Return node features for each node in the batch 
+        # Final prediction
+        x = self.pred_head(x)
+        
+        return x 
