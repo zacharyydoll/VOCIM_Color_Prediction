@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import MetaLayer
+from config import glan_dropout
 
 class EdgeModel(nn.Module):
     def __init__(self, node_dim, edge_dim, hidden_dim):
@@ -9,6 +10,7 @@ class EdgeModel(nn.Module):
         self.edge_mlp = nn.Sequential(
             nn.Linear(2 * node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(glan_dropout),
             nn.Linear(hidden_dim, edge_dim)
         )
         
@@ -22,6 +24,7 @@ class NodeModel(nn.Module):
         self.node_mlp = nn.Sequential(
             nn.Linear(node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(glan_dropout),
             nn.Linear(hidden_dim, node_dim)
         )
         
@@ -38,6 +41,7 @@ class GlobalModel(nn.Module):
         self.global_mlp = nn.Sequential(
             nn.Linear(node_dim + edge_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(glan_dropout),
             nn.Linear(hidden_dim, edge_dim)
         )
         
@@ -86,6 +90,7 @@ class GLAN(nn.Module):
         self.pred_head = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(glan_dropout),
             nn.Linear(hidden_dim, node_dim)  # Output should match input dimension
         )
         

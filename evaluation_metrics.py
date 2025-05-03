@@ -25,10 +25,11 @@ class ModelEvaluator:
         self.predictions = []
         self.labels = []
         self.probabilities = []
+        self.image_paths = []  # Store image paths
         self.graph_data = []  # Store graph data for visualization
         self.edge_weights = []  # Store edge weights for analysis
 
-    def update(self, outputs, labels, graph_data=None):
+    def update(self, outputs, labels, image_paths=None, graph_data=None):
         # Convert outputs to probabilities if they're logits
         if not torch.is_tensor(outputs):
             outputs = torch.tensor(outputs)
@@ -43,6 +44,9 @@ class ModelEvaluator:
         self.predictions.extend(preds.cpu().numpy())
         self.labels.extend(labels.cpu().numpy())
         self.probabilities.extend(probs.cpu().numpy())
+        
+        if image_paths is not None:
+            self.image_paths.extend(image_paths)
         
         if graph_data is not None:
             self.graph_data.append(graph_data)
@@ -88,6 +92,12 @@ class ModelEvaluator:
 
         accuracy = accuracy_score(self.labels, self.predictions)
         metrics['accuracy'] = accuracy
+
+        # Add raw predictions, labels, probabilities, and image paths to metrics
+        metrics['predictions'] = self.predictions
+        metrics['labels'] = self.labels
+        metrics['probabilities'] = self.probabilities
+        metrics['image_paths'] = self.image_paths
 
         return metrics
 
@@ -200,6 +210,7 @@ class ModelEvaluator:
         self.predictions = []
         self.labels = []
         self.probabilities = []
+        self.image_paths = []
         self.graph_data = []
         self.edge_weights = []
 

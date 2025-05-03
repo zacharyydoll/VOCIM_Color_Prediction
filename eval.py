@@ -6,7 +6,11 @@ from torch.optim import AdamW
 from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
-from config import batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, scheduler_factor, scheduler_patience, num_classes, model_name
+from config import (
+    batch_size, num_epochs, dropout_rate, 
+    learning_rate, weight_decay, scheduler_factor, 
+    scheduler_patience, num_classes, model_name
+)
 from model_builder import build_model
 from tqdm import tqdm
 import pickle
@@ -55,14 +59,17 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
         for batch in tqdm(dataloader, desc="Evaluating"):
             images = batch['image'].to(device)
             labels = batch['label'].to(device)
+            image_paths = batch['image_path']  # Get image paths from batch
             
             outputs = model(images)
             if hasattr(outputs, 'logits'):
                 outputs = outputs.logits
             
-            evaluator.update(outputs, labels)
+            evaluator.update(outputs, labels, image_paths=image_paths)
     
-    return evaluator.compute_metrics()
+    metrics = evaluator.compute_metrics()
+    
+    return metrics
 
 if __name__=="__main__":
     eval_json_data='/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json'

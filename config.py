@@ -29,7 +29,7 @@ glan_node_dim = 512  # Should match TinyViT embedding dimension
 glan_edge_dim = 512  # Dimension for edge features
 glan_hidden_dim = 512  # Hidden dimension for graph layers
 glan_num_layers = 3  # Number of graph network blocks
-glan_dropout = 0.1  # Dropout rate for graph layers
+glan_dropout = 0.2  # Dropout rate for graph layers
 
 # Evaluation metrics configuration
 compute_confusion_matrix = True
