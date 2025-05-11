@@ -12,7 +12,7 @@ import pickle
 from sklearn.metrics import accuracy_score
 from utils import save_checkpoint, save_best_model, load_checkpoint
 from evaluation_metrics import ModelEvaluator
-from config import use_glan, compute_graph_metrics
+from config import use_glan, compute_graph_metrics, num_classes
 import pdb
 
 def log_message(message, log_file="logs/output_summary.log"):
@@ -34,81 +34,38 @@ class Trainer:
         self.epoch_accuracies = []      # Evaluation accuracy per epoch
         self.epoch_eval_losses = []     # Evaluation loss per epoch
         if use_glan:
-            self.evaluator = ModelEvaluator(num_classes=model.head[-1].out_features)
+            self.evaluator = ModelEvaluator(num_classes=num_classes)
 
     def train(self, batch):
         self.model.train()
-        self.optimizer.zero_grad()
-        images = batch['image']
-        labels = batch['label']
-        images, labels = images.to(self.device), labels.to(self.device)
-
-        outputs = self.model(images)
-        if hasattr(outputs, 'logits'): #remove bloc for TinyViT
-            outputs = outputs.logits
+        images = batch['image'].to(self.device)
+        labels = batch['label'].to(self.device)
+        image_paths = batch['image_path']
+        
+        # Forward pass without GNN during training
+        outputs = self.model(images, image_paths=image_paths, use_gnn=False)
         loss = self.loss(outputs, labels)
+        
+        # Backward pass
+        self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        return loss
-
-    def evaluate(self, dataloader, json_filename=None):
-        self.model.eval()
-        total_loss = 0
-        results = {
-            'predictions': [],
-            'labels': [],
-            'image_paths': [],
-            'bboxes': [],
-        }
-
-        with torch.no_grad():
-            for sample in dataloader:
-                images = sample['image']
-                labels = sample['label']
-                image_path = sample['image_path']
-                bbox = sample['bbox'][0]
-
-                images, labels = images.to(self.device), labels.to(self.device)
-                outputs = self.model(images)
-                if hasattr(outputs, 'logits'): # remove bloc for TinyViT
-                    outputs = outputs.logits
-                loss = self.loss(outputs, labels)
-                total_loss += loss * len(sample)
-                _, preds = torch.max(outputs, 1)
-
-                results['predictions'].extend(preds.cpu().numpy().astype(int).tolist())
-                results['labels'].extend(labels.cpu().numpy().astype(int).tolist())
-                results['image_paths'].extend(image_path)
-                results['bboxes'].extend(bbox.cpu().numpy().tolist())
-
-                # Update evaluator if using GLAN
-                if use_glan:
-                    self.evaluator.update(outputs, labels)
-
-        loss_avg = total_loss / len(dataloader)
-        accuracy = accuracy_score(results['predictions'], results['labels'])
-        print(f'Accuracy: {accuracy:.4f} Loss: {loss_avg:.4f}')
-
-        # Compute and log metrics if using GLAN
-        if use_glan and compute_graph_metrics:
-            metrics = self.evaluator.compute_metrics()
-            if 'graph_metrics' in metrics:
-                log_message("\nGraph Metrics:")
-                for metric_name, metric_value in metrics['graph_metrics'].items():
-                    log_message(f"{metric_name}: {metric_value:.4f}")
-            if 'edge_metrics' in metrics:
-                log_message("\nEdge Metrics:")
-                for metric_name, metric_value in metrics['edge_metrics'].items():
-                    log_message(f"{metric_name}: {metric_value:.4f}")
-            self.evaluator.reset()
-
-        if json_filename:
-            with open(json_filename, 'wb') as f:
-                pickle.dump(results, f)
-            print(f'Predictions saved to {json_filename}')
         
-        return accuracy, loss_avg  # return both eval accuracy and loss
-    
+        return loss.item()
+
+    def evaluate(self, batch):
+        self.model.eval()
+        images = batch['image'].to(self.device)
+        labels = batch['label'].to(self.device)
+        image_paths = batch['image_path']
+        
+        with torch.no_grad():
+            # Use GNN during evaluation
+            outputs = self.model(images, image_paths=image_paths, use_gnn=True)
+            loss = self.loss(outputs, labels)
+            
+        return loss.item(), outputs
+
     def run_model(self, num_epoch, train_loader, eval_loader, view, scheduler=None):
         best_epochs = 0  # for early stopping
         for epoch in range(num_epoch):
@@ -116,7 +73,7 @@ class Trainer:
             running_loss = 0
             for batch_idx, batch in enumerate(tqdm(train_loader, desc="Training Batches", unit="batch")):
                 loss = self.train(batch)
-                running_loss += loss.item() * len(batch)
+                running_loss += loss * len(batch)
 
             epoch_train_loss = running_loss / len(train_loader)
 

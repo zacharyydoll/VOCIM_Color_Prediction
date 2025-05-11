@@ -1,7 +1,101 @@
 # VOCIM Color Prediction
 
-This project is a deep learning system for color prediction in bird images, specifically focusing on identifying the color of backpacks worn by birds. The system uses a combination of computer vision and deep learning techniques to analyze images and predict color categories.
+This repository contains the implementation of a color prediction system for birds in the VOCIM dataset. The system uses a combination of TinyViT for initial color predictions and a Graph Neural Network (GNN) for refining these predictions while ensuring bijectivity within each frame.
 Based on work by Xiaoran Chen (SDSC).
+
+## Architecture
+
+The system consists of two main components:
+
+1. **TinyViT Backbone**:
+   - Processes individual bird crops
+   - Outputs probability distribution over colors
+   - Can use heatmap mask for better feature extraction
+
+2. **ColorGNN**:
+   - Takes TinyViT's predictions for birds in the same frame
+   - Creates a bipartite graph between birds and colors
+   - Refines predictions while ensuring bijectivity
+   - Uses Hungarian algorithm for optimal assignments
+
+## Workflow
+
+1. **Data Processing**:
+   - Images are cropped to individual birds
+   - Frame IDs are extracted from filenames
+   - Birds are grouped by frame for GNN processing
+
+2. **Model Processing**:
+   - TinyViT processes each crop individually
+   - For each frame:
+     a. Get top-K colors from TinyViT for each bird
+     b. Create bipartite graph using only top-K colors
+     c. GNN processes the graph to learn relationships
+     d. Combine GNN scores with TinyViT probabilities
+     e. Apply Hungarian algorithm for final assignments
+
+3. **Score Combination**:
+   - GNN outputs a matrix of shape (num_birds, num_colors)
+   - Scores are weighted by TinyViT probabilities
+   - Higher TinyViT confidence → stronger GNN influence
+   - Lower TinyViT confidence → weaker GNN influence
+
+4. **Bijectivity Constraint**:
+   - Hungarian algorithm ensures one-to-one assignments
+   - Each bird gets a unique color
+   - Each color is used at most once per frame
+
+## Key Features
+
+- **Frame-Based Processing**: Birds from the same frame are processed together
+- **Top-K Selection**: Only considers TinyViT's top-K color predictions
+- **Bipartite Graph**: Represents relationships between birds and colors
+- **Score Weighting**: GNN scores are weighted by TinyViT confidence
+- **Bijective Assignments**: Ensures unique color assignments per frame
+
+## Usage
+
+1. **Training**:
+```bash
+python train.py --config config.py
+```
+
+2. **Evaluation**:
+```bash
+python eval.py --model_path path/to/model --data_path path/to/data
+```
+
+## Requirements
+
+- PyTorch
+- torch-geometric
+- timm
+- numpy
+- PIL
+- yaml
+
+## Configuration
+
+Key parameters in `config.py`:
+- `use_heatmap_mask`: Whether to use heatmap mask for TinyViT
+- `sigma_val`: Sigma value for heatmap mask
+- Model architecture parameters
+- Training parameters
+
+## Dataset Structure
+
+The dataset should be organized as follows:
+- Images are cropped to individual birds
+- Filenames contain frame IDs (e.g., 'img00332_bird_1.png')
+- YAML files map bird identities to colors
+- JSON annotations contain bounding boxes and metadata
+
+## Notes
+
+- The heatmap mask only affects TinyViT's feature extraction
+- GNN processes TinyViT's outputs, not the original images
+- Bijectivity is enforced at the frame level
+- The system can handle varying numbers of birds per frame
 
 ## Project Overview
 
@@ -11,14 +105,6 @@ The system is designed to:
 - Train a deep learning model to predict color categories
 - Evaluate model performance on test datasets
 - Enforce unique color assignments per frame using linear assignment
-
-## Requirements
-
-The project requires Python 3.9 and the following key dependencies:
-- PyTorch 2.3.0
-- torchvision 0.18.0
-- CUDA 12.1
-- Other dependencies listed in `environment.yml`
 
 ## Project Structure
 
@@ -103,7 +189,8 @@ The model uses a deep learning architecture that:
 The model includes a Graph Neural Network (GNN) component that:
 - Enhances the base TinyViT architecture
 - Uses separate dropout for the GNN component
-- Processes relationships between birds in the same frame
+- Creates a bipartite graph between birds and colors
+- Processes relationships between birds and colors in the same frame
 - Currently achieves ~92.8% accuracy on the ambiguous subset
 
 ## Linear Assignment Evaluation
