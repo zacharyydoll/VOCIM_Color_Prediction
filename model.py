@@ -11,7 +11,7 @@ from tqdm import tqdm
 import pickle
 from sklearn.metrics import accuracy_score
 from utils import save_checkpoint, save_best_model, load_checkpoint
-from evaluation_metrics import ModelEvaluator
+from evaluation_metrics import ModelEvaluator   
 from config import use_glan, compute_graph_metrics, num_classes
 import pdb
 
@@ -43,7 +43,13 @@ class Trainer:
         image_paths = batch['image_path']
         
         # Forward pass without GNN during training
-        outputs = self.model(images, image_paths=image_paths, use_gnn=False)
+        outputs = self.model(
+            images,
+            image_paths=image_paths,
+            use_gnn=True,
+            train_gnn=True
+        )
+
         loss = self.loss(outputs, labels)
         
         # Backward pass
@@ -53,18 +59,39 @@ class Trainer:
         
         return loss.item()
 
-    def evaluate(self, batch):
+    def evaluate(self, eval_loader):
         self.model.eval()
-        images = batch['image'].to(self.device)
-        labels = batch['label'].to(self.device)
-        image_paths = batch['image_path']
-        
+        total_loss = 0
+        total_correct = 0
+        total_samples = 0
+
         with torch.no_grad():
-            # Use GNN during evaluation
-            outputs = self.model(images, image_paths=image_paths, use_gnn=True)
-            loss = self.loss(outputs, labels)
-            
-        return loss.item(), outputs
+            for batch in eval_loader:
+                images = batch['image'].to(self.device)
+                labels = batch['label'].to(self.device)
+                image_paths = batch['image_path']
+
+                # Raw TinyViT
+                raw_logits = self.model(images, image_paths=image_paths, use_gnn=False)
+                raw_pred = raw_logits.argmax(dim=1)
+                total_raw_correct += (raw_pred == labels).sum().item()
+
+                loss = self.loss(raw_logits, labels)
+                total_loss += loss.item() * labels.size(0)
+
+                # GNN-enhanced
+                gnn_logits = self.model(images, image_paths=image_paths, use_gnn=True)
+                gnn_pred = gnn_logits.argmax(dim=1)
+                total_gnn_correct += (gnn_pred == labels).sum().item()
+
+                total_samples += labels.size(0)
+
+        raw_acc = total_raw_correct / total_samples
+        gnn_acc = total_gnn_correct / total_samples
+        avg_loss = total_loss / total_samples
+
+        return raw_acc, gnn_acc, avg_loss
+
 
     def run_model(self, num_epoch, train_loader, eval_loader, view, scheduler=None):
         best_epochs = 0  # for early stopping
@@ -77,8 +104,14 @@ class Trainer:
 
             epoch_train_loss = running_loss / len(train_loader)
 
-            eval_accuracy, eval_loss = self.evaluate(eval_loader)
-            log_message(f"\nEpoch {epoch}, Train Loss: {epoch_train_loss:.4f}, Eval Accuracy: {eval_accuracy:.4f}, Eval Loss: {eval_loss:.4f}")
+            raw_acc, gnn_acc, eval_loss = self.evaluate(eval_loader)
+            log_message(
+                f"\nEpoch {epoch} — "
+                f"Train Loss: {epoch_train_loss:.4f}  |  "
+                f"Raw Acc: {raw_acc:.4f}  |  "
+                f"GNN Acc: {gnn_acc:.4f}  |  "
+                f"Eval Loss: {eval_loss:.4f}"
+            )
 
             # Store losses and accuracy
             self.epoch_losses.append(epoch_train_loss)

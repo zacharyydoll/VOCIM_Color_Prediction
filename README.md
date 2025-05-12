@@ -28,11 +28,11 @@ The system consists of two main components:
 2. **Model Processing**:
    - TinyViT processes each crop individually
    - For each frame:
-     a. Get top-K colors from TinyViT for each bird
-     b. Create bipartite graph using only top-K colors
-     c. GNN processes the graph to learn relationships
-     d. Combine GNN scores with TinyViT probabilities
-     e. Apply Hungarian algorithm for final assignments
+     1. Get top-K colors from TinyViT for each bird
+     2. Create bipartite graph using only top-K colors
+     3. GNN processes the graph to learn relationships
+     4. Combine GNN scores with TinyViT probabilities
+     5. Apply Hungarian algorithm for final assignments
 
 3. **Score Combination**:
    - GNN outputs a matrix of shape (num_birds, num_colors)

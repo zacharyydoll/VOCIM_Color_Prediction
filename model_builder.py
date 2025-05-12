@@ -9,6 +9,7 @@ from config import (
 from transformers import ResNetConfig, ResNetForImageClassification
 from color_gnn import ColorGNN, extract_frame_id
 import torch.nn.functional as F
+from scipy.optimize import linear_sum_assignment
 from collections import defaultdict
 
 def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels=3):
@@ -101,45 +102,41 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
             # Store original forward method
             original_forward = model.forward
             
-            def new_forward(self, x, image_paths=None, use_gnn=False):
-                # Get logits from TinyViT
-                logits = original_forward(x)
-                
-                # During training, return raw logits
+            def new_forward(self, x, image_paths=None, use_gnn=False, train_gnn=False):
+                # 1) get raw TinyViT logits
+                logits = original_forward(x)          
+
+                # 2) if we’re NOT using the GNN, just return those
                 if not use_gnn or image_paths is None:
                     return logits
+
+                # 3) group by frame
+                probs  = F.softmax(logits, dim=1)    
+                frames = defaultdict(list)
+                for i, pth in enumerate(image_paths):
+                    fid = extract_frame_id(pth)
+                    frames[fid].append((i, probs[i]))
+
+                # 4) TRAINING branch: differentiable
+                if train_gnn:
+                    out = torch.zeros_like(probs)
+                    for lst in frames.values():
+                        idxs, ps = zip(*sorted(lst, key=lambda x: x[0]))
+                        P = torch.stack(ps)                     
+                        comb = self.color_gnn.forward_combined(P)  
+                        out[list(idxs)] = comb
+                    return F.log_softmax(out, dim=1)
+
+                # 5) INFERENCE branch: Hungarian
+                final = torch.full_like(logits, -1000.0)
+                for lst in frames.values():
+                    idxs, ps = zip(*sorted(lst, key=lambda x: x[0]))
+                    P = torch.stack(ps)
+                    assignments = self.color_gnn.assign(P)  # length N_birds
+                    for img_idx, color_idx in zip(idxs, assignments):
+                        final[img_idx, color_idx] = 1000.0
+                return final
                 
-                # During inference, apply GNN post-processing
-                probs = F.softmax(logits, dim=1)
-                
-                # Group probabilities by frame ID
-                frame_probs = {}
-                for i, path in enumerate(image_paths):
-                    frame_id = extract_frame_id(path)
-                    if frame_id not in frame_probs:
-                        frame_probs[frame_id] = []
-                    frame_probs[frame_id].append((i, probs[i]))
-                
-                # Process each frame's birds together
-                for frame_id, bird_probs in frame_probs.items():
-                    # Sort by original index to maintain order
-                    bird_probs.sort(key=lambda x: x[0])
-                    indices, probs_list = zip(*bird_probs)
-                    
-                    # Stack probabilities for this frame
-                    frame_probs_tensor = torch.stack(probs_list)
-                    
-                    # Get GNN assignments for this frame
-                    assignments = self.color_gnn(frame_probs_tensor)
-                    
-                    # Update logits based on GNN assignments
-                    for idx, assigned_color in zip(indices, assignments):
-                        # Set assigned class to high value, others to low value
-                        logits[idx] = -1000.0  # Reset all logits to very negative
-                        logits[idx, assigned_color] = 1000.0  # Set assigned class to very positive
-                
-                return logits
-            
             # Bind the new forward method to the model
             model.forward = new_forward.__get__(model)
             

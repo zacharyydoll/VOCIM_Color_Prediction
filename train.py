@@ -37,11 +37,44 @@ def main(train_json_data, eval_json_data, img_dir):
     model = build_model(pretrained=True, dropout_rate=dropout_rate, num_classes=num_classes)
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss()
-    # criterion = smooth_cross_entropy
-    optimizer = optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay) 
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=scheduler_factor, patience=scheduler_patience, verbose=True) 
+    #load TinyViT checkpoint first 
+    pretrained_ckpt = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask/top_colorid_best_model_9831v_9765t.pth"
+    if os.path.exists(pretrained_ckpt):
+        print(f"Loading pretrained TinyViT from {pretrained_ckpt}")
+        tmp = Trainer(model=model, loss=nn.NLLLoss(), optimizer=None, device=device)
+        tmp.load_model(pretrained_ckpt)
+        del tmp
+    else:
+        print(f"Warning: checkpoint not found at {pretrained_ckpt}, training from scratch")
 
+    if use_glan: # Freeze all tinyViT params if using GLAN so only GNN trains 
+        for name, p in model.named_parameters():
+            p.requires_grad = name.startswith("color_gnn.")
+        
+        optimizer = optim.AdamW(
+            model.color_gnn.parameters(),
+            lr=learning_rate,
+            weight_decay=weight_decay
+        )
+    else:
+        # no GLAN: fine-tune everything
+        for p in model.parameters():
+            p.requires_grad = True
+        optimizer = optim.AdamW(
+            model.parameters(),
+            lr=learning_rate,
+            weight_decay=weight_decay
+        )
+
+    criterion = nn.NLLLoss()
+    scheduler = ReduceLROnPlateau(
+        optimizer,
+        mode='max', 
+        factor=scheduler_factor, 
+        patience=scheduler_patience, 
+        verbose=True
+    )  
+    
     summary = f"""
     Training Summary:
     ----------------------------------------
@@ -66,7 +99,7 @@ def main(train_json_data, eval_json_data, img_dir):
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
     Mask Sigma: {sigma_val}
-    Scheduler: ReduceLROnPlateau, Mode: min, Factor: {scheduler_factor}, Patience: {scheduler_patience}
+    Scheduler: ReduceLROnPlateau, Mode: max, Factor: {scheduler_factor}, Patience: {scheduler_patience}
     ----------------------------------------
     """
     print(summary)

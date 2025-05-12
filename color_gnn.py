@@ -17,10 +17,10 @@ class ColorEdgeModel(nn.Module):
     def __init__(self, hidden_dim):
         super().__init__()
         self.edge_mlp = nn.Sequential(
-            nn.Linear(hidden_dim * 2, hidden_dim),
+            nn.Linear(hidden_dim * 3, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
-        )
+         )
     
     def forward(self, x, edge_index):
         row, col = edge_index
@@ -53,13 +53,15 @@ class ColorGNBlock(nn.Module):
         self.edge_model = ColorEdgeModel(hidden_dim)
         self.node_model = ColorNodeModel(hidden_dim)
     
-    def forward(self, x, edge_index):
-        # Edge update
-        edge_attr = self.edge_model(x, edge_index)
+    def forward(self, x, edge_index, edge_attr):
+        # edge_attr has shape [#edges, 1] (your TinyViT probs)
+        row, col = edge_index
+        # concatenate node features + existing edge_attr
+        edge_input = torch.cat([ x[row], x[col], edge_attr ], dim=1)
+        edge_attr = self.edge_model.edge_mlp(edge_input)   # [#edges, hidden_dim]
         
-        # Node update
+        # node update
         x = self.node_model(x, edge_index, edge_attr)
-        
         return x, edge_attr
 
 class ColorGNN(nn.Module):
@@ -70,6 +72,7 @@ class ColorGNN(nn.Module):
         
         # Initial node feature projection
         self.node_proj = nn.Linear(num_colors, hidden_dim)  # Project TinyViT probabilities
+        self.edge_proj = nn.Linear(1, hidden_dim)
         
         # GNN layers
         self.gnn_layers = nn.ModuleList([
@@ -77,9 +80,7 @@ class ColorGNN(nn.Module):
         ])
         
         # Final projection for color assignment
-        # Now outputs (num_birds, num_colors) directly
         self.color_proj = nn.Linear(hidden_dim, num_colors)
-        
         self.dropout = nn.Dropout(dropout)
     
     def create_bipartite_graph(self, probs):
@@ -114,66 +115,33 @@ class ColorGNN(nn.Module):
         
         return Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
     
-    def forward(self, probs):
-        """
-        Process a batch of birds from the same frame.
-        Args:
-            probs: Tensor of shape (num_birds, num_colors) containing TinyViT probabilities
-        Returns:
-            List of assigned color indices for each bird
-        """
-        # Ensure probs has the correct shape
-        if len(probs.shape) != 2 or probs.shape[1] != self.num_colors:
-            raise ValueError(f"Expected probs shape (num_birds, {self.num_colors}), got {probs.shape}")
-        
-        num_birds = probs.shape[0]
-        device = probs.device
-        
-        """
-        Get top-K colors among TinyViT probabilities, which gives two matrices:
-            - top_k_values: The actual probability values (num_birds x num_birds)
-            - top_k_indices: The indices of these values in the original matrix (num_birds x num_birds), 
-              to keep track of which color the top_K probabilities correspond to in the original matrix 
-        """
-        top_k_values, top_k_indices = torch.topk(probs, k=num_birds, dim=1)
-        
-        # create bipartite graph using only the top-K colors from TinyViT preds 
-        filtered_probs = torch.zeros_like(probs)
-        for i in range(num_birds):
-            filtered_probs[i, top_k_indices[i]] = top_k_values[i]
-        data = self.create_bipartite_graph(filtered_probs)
-        
+    def forward_combined(self, probs):
+        data = self.create_bipartite_graph(probs)
         x = data.x
-        for gnn in self.gnn_layers: # process through gnn layers
-            x, _ = gnn(x, data.edge_index)
+        edge_idx = data.edge_index
+        edge_attr = self.edge_proj(data.edge_attr)  
+
+        # message-passing
+        for block in self.gnn_layers:
+            x, edge_attr = block(x, edge_idx, edge_attr)
             x = self.dropout(x)
+
+        bird_scores = self.color_proj(x[:probs.size(0)])  # only the bird-nodes
+        return bird_scores * probs
+
+    def assign(self, probs):
+        # at inference do Hungarian on combined scores
+        combined = self.forward_combined(probs)   # [N_birds × C_colors]
+
+        # 2) sanitize: replace NaN→0, +Inf→1, –Inf→0
+        combined = torch.nan_to_num(combined,
+                                   nan=0.0,
+                                   posinf=1.0,
+                                   neginf=0.0)
+        # 3) clamp into [0,1] just in case you got tiny numerical overshoots
+        combined = combined.clamp(0.0, 1.0)
         
-        gnn_scores = self.color_proj(x[:num_birds]) #[nb_birds_in_frame x num_colors] gnn output 
-                
-        # Combine GNN scores with TinyViT probabilities by weighing gnn scores with the TinyViT probs.
-        # i.e. low color confidence from TinyViT -> its gnn score will be weighed less, and vice-versa.
-        combined_scores = torch.zeros(num_birds, self.num_colors, device=device)
-        
-        for i in range(num_birds):
-            for j in range(self.num_colors):
-                if j in top_k_indices[i]:  # only combine scores for top-K colors
-                    gnn_score = gnn_scores[i, j]  
-                    tinyvit_prob = probs[i, j]   
-                    combined_scores[i, j] = gnn_score * tinyvit_prob
-        
-        # create square cost matrix for Hungarian algorithm (num_birds x num_birds)
-        cost_matrix = torch.zeros(num_birds, num_birds, device=device)
-        
-        for i in range(num_birds):
-            for j in range(num_birds):
-                color_idx = top_k_indices[i, j] # find color idx for this position
-                cost_matrix[i, j] = 1 - combined_scores[i, color_idx] # set cost (1 - probability), because Hungarian minimizes cost
-        
-        # Apply Hungarian algo to ensure bijective assignment per frame
-        # Detach from computation graph before converting to numpy
-        row_ind, col_ind = linear_sum_assignment(cost_matrix.detach().cpu().numpy())
-        
-        # Map back to original color indices
-        final_assignments = top_k_indices[torch.arange(num_birds, device=device), col_ind]
-        
-        return final_assignments 
+        # 4) build cost matrix and Hungarian
+        cost = (1.0 - combined).detach().cpu().numpy()
+        row, col = linear_sum_assignment(cost)
+        return torch.tensor(col, device=probs.device)       

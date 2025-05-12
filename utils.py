@@ -68,7 +68,8 @@ def load_checkpoint(model, filename='best_model.pth'):
     #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = get_device()
     checkpoint = torch.load(filename, map_location=device)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    #model.load_state_dict(checkpoint['model_state_dict'])
+    model.load_state_dict(checkpoint['model_state_dict'], strict=False)
     accuracy = checkpoint['accuracy']
     print(f'Best model loaded from {filename} with accuracy {accuracy:.4f}')
     return model, accuracy

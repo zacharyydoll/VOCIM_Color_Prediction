@@ -2,7 +2,7 @@
 model_used = "tinyvit" # "tinyvit" or "resnet"
 
 # settings
-batch_size = 16
+batch_size = 16 # was 16, increased temporarily for debugging
 num_epochs = 50
 dropout_rate = 0.3
 learning_rate = 1e-04
@@ -27,7 +27,7 @@ model_name = 'tiny_vit_21m_512.dist_in22k_ft_in1k'
 use_glan = True  # now the color GNN (kept GLAN name for backwards compatibility)
 glan_hidden_dim = 256  # Hidden dimension for graph layers
 glan_num_layers = 3  # Number of graph network blocks
-glan_dropout = 0.2  # Dropout rate for graph layers
+glan_dropout = 0.1  # Dropout rate for graph layers
 
 # Evaluation metrics configuration
 compute_confusion_matrix = True
