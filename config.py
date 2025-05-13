@@ -28,6 +28,9 @@ use_glan = True  # now the color GNN (kept GLAN name for backwards compatibility
 glan_hidden_dim = 256  # Hidden dimension for graph layers
 glan_num_layers = 3  # Number of graph network blocks
 glan_dropout = 0.1  # Dropout rate for graph layers
+glan_lr = 2e-4 
+glan_early_stop = 20 
+glan_epochs = 100
 
 # Evaluation metrics configuration
 compute_confusion_matrix = True

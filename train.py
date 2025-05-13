@@ -17,8 +17,8 @@ from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 from config import (
     use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
-    scheduler_factor, scheduler_patience, num_classes, model_name,
-    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout
+    scheduler_factor, scheduler_patience, num_classes, model_name, glan_early_stop
+    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout, glan_lr, glan_epochs
 )
 from model_builder import build_model
                    
@@ -53,7 +53,7 @@ def main(train_json_data, eval_json_data, img_dir):
         
         optimizer = optim.AdamW(
             model.color_gnn.parameters(),
-            lr=learning_rate,
+            lr=glan_lr,
             weight_decay=weight_decay
         )
     else:
@@ -95,6 +95,9 @@ def main(train_json_data, eval_json_data, img_dir):
 
     Using GLAN: {use_glan}
     GLAN Dropout Rate: {glan_dropout}
+    GLAN Epochs: {glan_epochs}
+    GLAN Learning Rate: {glan_lr}
+    GLAN Early Stoppage: {glan_early_stop}
 
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
@@ -117,6 +120,9 @@ def main(train_json_data, eval_json_data, img_dir):
         trainer.load_model('top_colorid_best_model.pth')
     
     # Run training
+    if use_glan:
+        num_epochs = glan_epochs
+
     trainer.run_model(num_epoch=num_epochs, train_loader=train_loader, 
                      eval_loader=eval_loader, view='top_colorid', scheduler=scheduler)
 
