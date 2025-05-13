@@ -137,7 +137,7 @@ class Trainer:
                 scheduler.step(gnn_acc)
 
             # Early stopping & best model saving by GNN accuracy
-            early_stoppage = glan_early_stop # was 10 
+            early_stoppage = glan_early_stop if use_glan else 10  
             if gnn_acc > self.best_accuracy:
                 self.best_accuracy = save_best_model(
                     self.model, gnn_acc, self.best_accuracy,

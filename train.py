@@ -16,9 +16,9 @@ from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 from config import (
-    use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
-    scheduler_factor, scheduler_patience, num_classes, model_name, glan_early_stop
-    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout, glan_lr, glan_epochs
+    use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, 
+    scheduler_factor, scheduler_patience, num_classes, model_name, glan_early_stop, glan_weight_decay,
+    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout, glan_lr, glan_epochs, freeze_tinyvit
 )
 from model_builder import build_model
                    
@@ -33,6 +33,7 @@ def smooth_cross_entropy(pred, target, smoothing=smoothing):
 def main(train_json_data, eval_json_data, img_dir):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
+    train_epochs = glan_epochs if use_glan else num_epochs
 
     model = build_model(pretrained=True, dropout_rate=dropout_rate, num_classes=num_classes)
     model = model.to(device)
@@ -48,14 +49,46 @@ def main(train_json_data, eval_json_data, img_dir):
         print(f"Warning: checkpoint not found at {pretrained_ckpt}, training from scratch")
 
     if use_glan: # Freeze all tinyViT params if using GLAN so only GNN trains 
-        for name, p in model.named_parameters():
-            p.requires_grad = name.startswith("color_gnn.")
-        
-        optimizer = optim.AdamW(
-            model.color_gnn.parameters(),
-            lr=glan_lr,
-            weight_decay=weight_decay
-        )
+        if freeze_tinyvit: 
+            for name, p in model.named_parameters():
+                p.requires_grad = name.startswith("color_gnn.")
+            
+            optimizer = optim.AdamW(
+                model.color_gnn.parameters(),
+                lr=glan_lr,
+                weight_decay=glan_weight_decay
+            )
+        else: # unfreeze last block of tinyvit 
+            for p in model.parameters():
+                p.requires_grad = False
+
+            # 2) unfreeze GNN
+            gnn_params = list(model.color_gnn.parameters())
+            for p in gnn_params:
+                p.requires_grad = True
+
+            # 3) unfreeze last *transformer* block
+            last_stage   = model.stages[-1]
+            last_block   = last_stage.blocks[-1]
+            backbone_params = list(last_block.parameters())
+
+            # 4) unfreeze the classification head
+            head_params = list(model.head.parameters())
+
+            for p in backbone_params + head_params:
+                p.requires_grad = True
+
+            # 5) optimizer with two param-groups
+            optimizer = optim.AdamW(
+                [
+                { 'params': backbone_params + head_params,
+                    'lr': learning_rate,
+                    'weight_decay': weight_decay },
+                { 'params': gnn_params,
+                    'lr': glan_lr,
+                    'weight_decay': glan_weight_decay }
+                ]
+            )
     else:
         # no GLAN: fine-tune everything
         for p in model.parameters():
@@ -83,21 +116,23 @@ def main(train_json_data, eval_json_data, img_dir):
     Model: {model.__class__.__name__}
     Pretrained: True
     Batch size: {batch_size}
-    Number of epochs: {num_epochs}
+    Number of epochs: {train_epochs}
     Learning Rate: {optimizer.param_groups[0]['lr']}
     Weight Decay: {optimizer.defaults.get('weight_decay', 'N/A')}
+    Tiny ViT Completely Frozen: {freeze_tinyvit}
 
     Train JSON: {train_json_data}
     Eval JSON: {eval_json_data}
     Image Directory: {img_dir}
 
-    Dropout Rate: {dropout_rate}
+    Transformer Dropout Rate: {dropout_rate}
 
     Using GLAN: {use_glan}
     GLAN Dropout Rate: {glan_dropout}
     GLAN Epochs: {glan_epochs}
     GLAN Learning Rate: {glan_lr}
-    GLAN Early Stoppage: {glan_early_stop}
+    GLAN Early Stoppage: After {glan_early_stop} epochs of no accuracy improvement
+    GLAN weight decay: {glan_weight_decay}
 
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
@@ -120,10 +155,7 @@ def main(train_json_data, eval_json_data, img_dir):
         trainer.load_model('top_colorid_best_model.pth')
     
     # Run training
-    if use_glan:
-        num_epochs = glan_epochs
-
-    trainer.run_model(num_epoch=num_epochs, train_loader=train_loader, 
+    trainer.run_model(num_epoch=train_epochs, train_loader=train_loader, 
                      eval_loader=eval_loader, view='top_colorid', scheduler=scheduler)
 
 if __name__=="__main__":
