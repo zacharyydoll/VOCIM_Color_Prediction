@@ -4,6 +4,7 @@ from sampler import ClassBalancedSampler
 from PIL import Image
 from PIL import ImageOps
 from torchvision import transforms
+from config import sampler_ambig_factor
 
 def letterbox(img, size=(512, 512), fill_color=(0, 0, 0)):
     """
@@ -31,10 +32,10 @@ train_transform = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
-def get_train_dataloder(json_file, img_dir, batch_size):
+def get_train_dataloder(json_file, img_dir, batch_size, ambiguous_json_path=None, ambiguous_factor=sampler_ambig_factor):
     transform = train_transform # using letteboxing to 512
     train_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
-    sampler = ClassBalancedSampler(train_data).get_sampler()
+    sampler = ClassBalancedSampler(train_data, ambiguous_json_path=ambiguous_json_path, ambiguous_factor=ambiguous_factor).get_sampler()
     train_dataloader = DataLoader(train_data, sampler = sampler, batch_size=batch_size)
     return train_dataloader
 

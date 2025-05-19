@@ -2,19 +2,36 @@ import numpy as np
 from torch.utils.data import WeightedRandomSampler
 import pdb
 import re 
+import json
+import os
+
+from config import weigh_ambig_samples
 
 class ClassBalancedSampler:
-    def __init__(self, dataset):
+    def __init__(self, dataset, ambiguous_json_path=None, ambiguous_factor=5):
         """
         Initializes the ClassBalancedSampler with the labels of the dataset.
-        
+        Optionally oversamples ambiguous cases.
         Args:
-            labels (list or np.ndarray): The labels for the dataset.
+            dataset: The dataset instance.
+            ambiguous_json_path (str): Path to JSON file with ambiguous file names.
+            ambiguous_factor (int): Factor to multiply ambiguous sample weights.
         """
         self.dataset = dataset
         self.labels = [self.dataset.get_effective_label(anno) for anno in self.dataset.annotations]
         self.class_weights = self._compute_class_weights()
         self.sample_weights = self._compute_sample_weights()
+
+        # Oversample ambiguous cases if provided
+        if weigh_ambig_samples and ambiguous_json_path and os.path.exists(ambiguous_json_path):
+            with open(ambiguous_json_path, 'r') as f:
+                ambiguous_files = set(json.load(f))
+            for idx, annotation in enumerate(self.dataset.annotations):
+                img_idx = annotation['image_id']
+                file_name = self.dataset.img_paths[img_idx]['file_name']
+                if file_name in ambiguous_files:
+                    self.sample_weights[idx] *= ambiguous_factor
+
         self.sampler = WeightedRandomSampler(weights=self.sample_weights, 
                                              num_samples=len(self.sample_weights), 
                                              replacement=True)

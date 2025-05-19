@@ -8,6 +8,8 @@ dropout_rate = 0.3
 learning_rate = 1e-04 # transformer learning rate 
 weight_decay = 0.01
 freeze_tinyvit=False # freeze or unfreeze last block of tinyvit 
+weigh_ambig_samples = True 
+sampler_ambig_factor = 5 # factor to multiply ambiguous sample weights by 
 
 # Smoothing
 smoothing = 0.1

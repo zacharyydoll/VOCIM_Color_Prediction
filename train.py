@@ -19,7 +19,8 @@ from config import (
     use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
     scheduler_mode, scheduler_factor, scheduler_patience, num_classes, model_name,
     glan_early_stop, glan_weight_decay,smoothing, sigma_val, use_heatmap_mask, glan_hidden_dim,
-    model_used, glan_dropout, glan_lr, glan_epochs, freeze_tinyvit, glan_num_layers
+    model_used, glan_dropout, glan_lr, glan_epochs, freeze_tinyvit, glan_num_layers, weigh_ambig_samples,
+    sampler_ambig_factor
 )
 from model_builder import build_model
                    
@@ -41,6 +42,8 @@ def main(train_json_data, eval_json_data, img_dir):
 
     #load TinyViT checkpoint first 
     pretrained_ckpt = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask/top_colorid_best_model_9831v_9765t.pth"
+    ambiguous_json_path = "/mydata/vocim/zachary/color_prediction/data/ambig_train_samples.json"
+
     if os.path.exists(pretrained_ckpt):
         print(f"Loading pretrained TinyViT from {pretrained_ckpt}")
         tmp = Trainer(model=model, loss=nn.NLLLoss(), optimizer=None, device=device)
@@ -137,6 +140,9 @@ def main(train_json_data, eval_json_data, img_dir):
     GLAN Weight Decay: {glan_weight_decay}
     GLAN Hidden Dimention: {glan_hidden_dim}
 
+    Weighing Ambiguous Training Samples: {weigh_ambig_samples}
+    Weight of Ambiguous Training Samples: {sampler_ambig_factor}
+
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
     Mask Sigma: {sigma_val}
@@ -148,7 +154,14 @@ def main(train_json_data, eval_json_data, img_dir):
     with open("logs/output_summary.log", "w") as f:
         f.write(summary)
 
-    train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
+    #train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
+    train_loader = get_train_dataloder(
+        train_json_data,
+        img_dir,
+        batch_size=batch_size,
+        ambiguous_json_path=ambiguous_json_path,
+        ambiguous_factor=sampler_ambig_factor
+    )
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
     
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)

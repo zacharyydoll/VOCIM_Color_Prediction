@@ -4,9 +4,9 @@ import yaml
 import pandas as pd
 from PIL import Image
 
-TEST_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json"
+TEST_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/newdata_cls_train_vidsplit_n.json" # /mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json
 SHARED_ANNOTATIONS_BASE = "/mydata/vocim/zachary/data/shared/KeypointAnnotations"
-OUTPUT_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json"
+OUTPUT_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/ambig_train_samples.json" # /mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json
 
 # Load bird identity mapping and color map if needed
 with open("/mydata/vocim/zachary/color_prediction/newdata_bird_identity.yaml", "r") as f:
