@@ -27,3 +27,4 @@ ambig_subst_comparisons/
 init_git.sh
 eval_results/
 checkpoints/
+gnn_enhancement/

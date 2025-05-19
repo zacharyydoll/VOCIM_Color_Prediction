@@ -16,9 +16,10 @@ from model import Trainer
 from dataset import ImageDataset
 from dataloader import get_eval_dataloder, get_train_dataloder
 from config import (
-    use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay, 
-    scheduler_factor, scheduler_patience, num_classes, model_name, glan_early_stop, glan_weight_decay,
-    smoothing, sigma_val, use_heatmap_mask, model_used, glan_dropout, glan_lr, glan_epochs, freeze_tinyvit
+    use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
+    scheduler_mode, scheduler_factor, scheduler_patience, num_classes, model_name,
+    glan_early_stop, glan_weight_decay,smoothing, sigma_val, use_heatmap_mask, glan_hidden_dim,
+    model_used, glan_dropout, glan_lr, glan_epochs, freeze_tinyvit, glan_num_layers
 )
 from model_builder import build_model
                    
@@ -102,7 +103,7 @@ def main(train_json_data, eval_json_data, img_dir):
     criterion = nn.NLLLoss()
     scheduler = ReduceLROnPlateau(
         optimizer,
-        mode='max', 
+        mode=scheduler_mode, 
         factor=scheduler_factor, 
         patience=scheduler_patience, 
         verbose=True
@@ -110,7 +111,7 @@ def main(train_json_data, eval_json_data, img_dir):
     
     summary = f"""
     Training Summary:
-    ----------------------------------------
+    ---------------------------------------------------------------------------
     Device: {device}
     Using: {model_used}
     Model: {model.__class__.__name__}
@@ -129,16 +130,18 @@ def main(train_json_data, eval_json_data, img_dir):
 
     Using GLAN: {use_glan}
     GLAN Dropout Rate: {glan_dropout}
+    GLAN Number of Layers: {glan_num_layers}
     GLAN Epochs: {glan_epochs}
     GLAN Learning Rate: {glan_lr}
     GLAN Early Stoppage: After {glan_early_stop} epochs of no accuracy improvement
-    GLAN weight decay: {glan_weight_decay}
+    GLAN Weight Decay: {glan_weight_decay}
+    GLAN Hidden Dimention: {glan_hidden_dim}
 
     Smoothing: {smoothing}
     Use Heatmap Mask: {use_heatmap_mask}
     Mask Sigma: {sigma_val}
-    Scheduler: ReduceLROnPlateau, Mode: max, Factor: {scheduler_factor}, Patience: {scheduler_patience}
-    ----------------------------------------
+    Scheduler: ReduceLROnPlateau, Mode: {scheduler_mode}, Factor: {scheduler_factor}, Patience: {scheduler_patience}
+    ---------------------------------------------------------------------------
     """
     print(summary)
     os.makedirs("logs", exist_ok=True)

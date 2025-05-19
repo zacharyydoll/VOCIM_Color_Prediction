@@ -53,13 +53,18 @@ nohup python3 -u train.py \
   > "$LOG_FILE" 2>&1 &
 TRAIN_PID=$!
 
-echo "Training started with PID: $TRAIN_PID. Waiting for training to complete..."
 echo "Monitor logs with:"
 echo "  - Full log: tail -f $LOG_FILE"
 echo "  - Clean summary: tail -f $SUMMARY_FILE"
 echo "  - Errors: tail -f $ERROR_LOG"
-echo "Check training with: ps aux | grep \"python train.py\""
-echo "Kill the process with: pkill -f \"python train.py\""
+echo "Check training with: ps aux | grep \"python3 train.py\""
+echo "Kill the process with: pkill -f \"python3 -u train.py\""
+{
+echo "=========================================================================="
+echo "Training started at $(date '+%Y-%m-%d %H:%M:%S')"
+echo "PID: $TRAIN_PID"
+echo "=========================================================================="
+} >> "$LOG_FILE"
 wait $TRAIN_PID
 
 grep -E '^Accuracy: |^Epoch |^Checkpoint saved|^Best model saved|Total training time' "$LOG_FILE" > "$SUMMARY_FILE"

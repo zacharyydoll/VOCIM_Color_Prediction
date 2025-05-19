@@ -19,6 +19,7 @@ use_heatmap_mask=True
 # Scheduler params
 scheduler_factor = 0.5
 scheduler_patience = 3
+scheduler_mode = 'max' # or min 
 
 # Model params
 num_classes = 8
@@ -26,13 +27,13 @@ model_name = 'tiny_vit_21m_512.dist_in22k_ft_in1k'
 
 # ColorGNN configuration
 use_glan = True  # now the color GNN (kept GLAN name for backwards compatibility)
-glan_hidden_dim = 256  # Hidden dimension for graph layers
-glan_num_layers = 4  # TODO: try with 4 or 5
-glan_dropout = 0.1  # Dropout rate for graph layers
-glan_lr = 1e-4 # TODO: try with 2e-4 or 5e-4
-glan_early_stop = 20 
-glan_epochs = 70
-glan_weight_decay = 1e-4
+glan_hidden_dim = 256  
+glan_num_layers = 4  # previously was 4 -> 97.95% acc. TODO: try with 3 or 5 
+glan_dropout = 0.1  # already tried 0.2 -> worse results 
+glan_lr = 5e-4 # TODO: already tried with 2e-4, 5e-5 -> <97% acc
+glan_early_stop = 25    
+glan_epochs = 80
+glan_weight_decay = 0.01 # was 1e-4 -> ~96% acc stabilization
 
 # Evaluation metrics configuration
 compute_confusion_matrix = True
