@@ -129,19 +129,39 @@ class ColorGNN(nn.Module):
         bird_scores = self.color_proj(x[:probs.size(0)])  # only the bird-nodes
         return bird_scores * probs
 
-    def assign(self, probs):
-        # at inference do Hungarian on combined scores
-        combined = self.forward_combined(probs)   # [N_birds × C_colors]
+    def assign(self, probs, tinyvit_probs=None):
+        """
+        Assign colors using the Hungarian algorithm, optionally with top-K color selection.
+        Args:
+            probs: Tensor of shape [N_birds, num_colors] (TinyViT probabilities)
+            tinyvit_probs: Tensor or np.ndarray of shape [N_birds, num_colors] (TinyViT softmax probabilities)
+        Returns:
+            Tensor of assigned color indices (length N_birds)
+        """
 
-        # 2) sanitize: replace NaN→0, +Inf→1, –Inf→0
-        combined = torch.nan_to_num(combined,
-                                   nan=0.0,
-                                   posinf=1.0,
-                                   neginf=0.0)
-        # 3) clamp into [0,1] just in case you got tiny numerical overshoots
+        combined = self.forward_combined(probs)   # [N_birds × C_colors]
+        combined = torch.nan_to_num(combined, nan=0.0, posinf=1.0, neginf=0.0)
         combined = combined.clamp(0.0, 1.0)
-        
-        # 4) build cost matrix and Hungarian
-        cost = (1.0 - combined).detach().cpu().numpy()
-        row, col = linear_sum_assignment(cost)
-        return torch.tensor(col, device=probs.device)       
+        N_birds, N_colors = combined.shape
+
+        if tinyvit_probs is not None:
+            if isinstance(tinyvit_probs, torch.Tensor): # ensure numpy array for idxing
+                tinyvit_probs_np = tinyvit_probs.detach().cpu().numpy()
+            else:
+                tinyvit_probs_np = np.array(tinyvit_probs)
+            
+            # sum probs for each color across all birds in frame 
+            color_sums = tinyvit_probs_np.sum(axis=0)  # (num_colors,)
+            # get idxs for topK unique colors 
+            topk = N_birds
+            topk_color_indices = np.argsort(color_sums)[-topk:][::-1]
+            reduced_combined = combined[:, topk_color_indices] # reduce matrix to N_birds x N_birds
+            cost = (1.0 - reduced_combined).detach().cpu().numpy()
+            row, col = linear_sum_assignment(cost)
+            assigned_colors = [topk_color_indices[j] for j in col]
+            return torch.tensor(assigned_colors, device=probs.device)
+        else:
+            # fallback: use all colors like before 
+            cost = (1.0 - combined).detach().cpu().numpy()
+            row, col = linear_sum_assignment(cost)
+            return torch.tensor(col, device=probs.device)       

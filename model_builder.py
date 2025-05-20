@@ -106,7 +106,7 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                 # 1) get raw TinyViT logits
                 logits = original_forward(x)          
 
-                # 2) if we’re NOT using the GNN, just return those
+                # 2) if we're NOT using the GNN, just return those
                 if not use_gnn or image_paths is None:
                     return logits
 
@@ -132,7 +132,8 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                 for lst in frames.values():
                     idxs, ps = zip(*sorted(lst, key=lambda x: x[0]))
                     P = torch.stack(ps)
-                    assignments = self.color_gnn.assign(P)  # length N_birds
+                    # pass TinyViT probs for top-K selection
+                    assignments = self.color_gnn.assign(P, tinyvit_probs=P)  # length N_birds
                     for img_idx, color_idx in zip(idxs, assignments):
                         final[img_idx, color_idx] = 1000.0
                 return final
