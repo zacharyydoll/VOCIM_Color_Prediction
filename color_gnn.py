@@ -65,14 +65,20 @@ class ColorGNBlock(nn.Module):
         return x, edge_attr
 
 class ColorGNN(nn.Module):
-    def __init__(self, num_colors, hidden_dim=256, num_layers=3, dropout=0.1):
+    def __init__(self, num_colors, embedding_dim=576, hidden_dim=256, num_layers=3, dropout=0.1):
         super().__init__()
         self.num_colors = num_colors
         self.hidden_dim = hidden_dim
+        self.embedding_dim = embedding_dim
         
-        # Initial node feature projection
-        self.node_proj = nn.Linear(num_colors, hidden_dim)  # Project TinyViT probabilities
+        # Project TinyViT embeddings to hidden_dim for bird nodes
+        self.bird_node_proj = nn.Linear(embedding_dim, hidden_dim)
+        # Initial node feature projection (not used for embeddings, but kept for compatibility)
+        self.node_proj = nn.Linear(num_colors, hidden_dim)
         self.edge_proj = nn.Linear(1, hidden_dim)
+        
+        # Color node projection (for one-hot color nodes)
+        self.color_node_proj = nn.Linear(num_colors, hidden_dim)
         
         # GNN layers
         self.gnn_layers = nn.ModuleList([
@@ -83,90 +89,69 @@ class ColorGNN(nn.Module):
         self.color_proj = nn.Linear(hidden_dim, num_colors)
         self.dropout = nn.Dropout(dropout)
     
-    def create_bipartite_graph(self, probs):
+    def create_bipartite_graph(self, embeddings, probs):
         """
         Create a bipartite graph for a single frame's birds.
         Args:
+            embeddings: Tensor of shape (num_birds, embedding_dim) or (num_birds, channels, H, W)
             probs: Tensor of shape (num_birds, num_colors) containing TinyViT probabilities
         Returns:
             Data object containing the bipartite graph
         """
-        num_birds = probs.shape[0]
-        device = probs.device
-        
-        # Create node features
-        bird_nodes = self.node_proj(probs)  # Project TinyViT probabilities
-        color_nodes = torch.eye(self.num_colors, device=device)  # One-hot encoding of colors
-        color_nodes = self.node_proj(color_nodes)  # Project color nodes to same dimension
+        num_birds = embeddings.shape[0]
+        device = embeddings.device
+        # If embeddings is 4D, flatten to 2D by global average pooling
+        if embeddings.dim() == 4:
+            embeddings = embeddings.mean(dim=[2, 3])  # [num_birds, channels]
+        # Project bird node features to hidden_dim
+        bird_nodes = self.bird_node_proj(embeddings)  # shape: (num_birds, hidden_dim)
+        # Color node features: one-hot, projected to embedding_dim
+        color_nodes = torch.eye(self.num_colors, device=device)
+        color_nodes = self.color_node_proj(color_nodes)  # project to hidden_dim
+        # Concatenate bird and color nodes
         x = torch.cat([bird_nodes, color_nodes], dim=0)
-        
-        # Create edge connections (all birds connect to all colors)
+        # Edge connections (all birds to all colors)
         bird_indices = torch.arange(num_birds, device=device)
         color_indices = torch.arange(self.num_colors, device=device) + num_birds
-        
-        # Create all possible bird-color pairs
         bird_idx = bird_indices.repeat_interleave(self.num_colors)
         color_idx = color_indices.repeat(num_birds)
-        
         edge_index = torch.stack([bird_idx, color_idx], dim=0)
-        
-        # Edge attributes are the TinyViT probabilities
+        # Edge attributes: TinyViT probabilities for each bird-color pair
         edge_attr = probs.view(-1, 1)
-        
         return Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
-    
-    def forward_combined(self, probs):
-        data = self.create_bipartite_graph(probs)
+
+    def forward_combined(self, embeddings, probs):
+        data = self.create_bipartite_graph(embeddings, probs)
         x = data.x
         edge_idx = data.edge_index
-        edge_attr = self.edge_proj(data.edge_attr)  
-
-        # message-passing
+        edge_attr = self.edge_proj(data.edge_attr)  # project edge attributes
         for block in self.gnn_layers:
             x, edge_attr = block(x, edge_idx, edge_attr)
             x = self.dropout(x)
-
-        bird_scores = self.color_proj(x[:probs.size(0)])  # only the bird-nodes
+        bird_scores = self.color_proj(x[:embeddings.size(0)])  # only the bird-nodes
         return bird_scores * probs
 
-    def assign(self, probs, tinyvit_probs=None):
-        """
-        Assign colors using the Hungarian algorithm, optionally with top-K color selection.
-        Args:
-            probs: Tensor of shape [N_birds, num_colors] (TinyViT probabilities)
-            tinyvit_probs: Tensor or np.ndarray of shape [N_birds, num_colors] (TinyViT softmax probabilities)
-        Returns:
-            Tensor of assigned color indices (length N_birds)
-        """
-        combined = self.forward_combined(probs)   # [N_birds × C_colors]
+    def assign(self, embeddings, probs, tinyvit_probs=None):
+        combined = self.forward_combined(embeddings, probs)   # [N_birds × C_colors]
         combined = torch.nan_to_num(combined, nan=0.0, posinf=1.0, neginf=0.0)
         combined = combined.clamp(0.0, 1.0)
         N_birds, N_colors = combined.shape
-
         if tinyvit_probs is not None:
-            # Ensure numpy array for indexing
             if isinstance(tinyvit_probs, torch.Tensor):
                 tinyvit_probs_np = tinyvit_probs.detach().cpu().numpy()
             else:
                 tinyvit_probs_np = np.array(tinyvit_probs)
-            # sum probs for each color across all birds
-            color_sums = tinyvit_probs_np.sum(axis=0)  # shape: (num_colors,)
-            # get indices of top-K unique colors
+            color_sums = tinyvit_probs_np.sum(axis=0)
             topk = N_birds
             topk_color_indices = np.argsort(color_sums)[-topk:][::-1]
-            # Reduce the matrix to N_birds x N_birds
-            reduced_combined = combined[:, topk_color_indices]
-            # Ensure the array is contiguous before converting to numpy
-            if isinstance(reduced_combined, torch.Tensor):
-                reduced_combined = reduced_combined.contiguous().detach().cpu().numpy()
-            else:
-                reduced_combined = np.ascontiguousarray(reduced_combined)
+            combined_np = combined.detach().cpu().numpy()
+            reduced_combined = combined_np[:, topk_color_indices]
+            reduced_combined = np.ascontiguousarray(reduced_combined)
             cost = (1.0 - reduced_combined)
             row, col = linear_sum_assignment(cost)
             assigned_colors = [topk_color_indices[j] for j in col]
-            return torch.tensor(assigned_colors, device=probs.device)
+            return torch.tensor(assigned_colors, device=embeddings.device)
         else:
-            # fallback: use all colors like before 
             cost = (1.0 - combined).detach().cpu().numpy()
             row, col = linear_sum_assignment(cost)
-            return torch.tensor(col, device=probs.device)       
+            return torch.tensor(col, device=embeddings.device)       

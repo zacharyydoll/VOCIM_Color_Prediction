@@ -4,7 +4,7 @@ import torch
 from config import (
     use_heatmap_mask, model_used, use_glan,
     glan_hidden_dim, glan_num_layers, glan_dropout,
-    num_classes
+    num_classes, tinyvit_embedding_dim
 )
 from transformers import ResNetConfig, ResNetForImageClassification
 from color_gnn import ColorGNN, extract_frame_id
@@ -94,6 +94,7 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
         if use_glan:
             model.color_gnn = ColorGNN(
                 num_colors=num_classes,
+                embedding_dim=tinyvit_embedding_dim,
                 hidden_dim=glan_hidden_dim,
                 num_layers=glan_num_layers,
                 dropout=glan_dropout
@@ -103,37 +104,47 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
             original_forward = model.forward
             
             def new_forward(self, x, image_paths=None, use_gnn=False, train_gnn=False):
-                # 1) get raw TinyViT logits
-                logits = original_forward(x)          
+                # 1) get TinyViT embeddings and logits
+                embeddings = self.forward_features(x)  # shape: (batch, embedding_dim)
+                logits = original_forward(x)           # shape: (batch, num_classes)
 
-                # 2) if we're NOT using the GNN, just return those
+                # 2) if we're NOT using the GNN, just return logits
                 if not use_gnn or image_paths is None:
                     return logits
 
                 # 3) group by frame
-                probs  = F.softmax(logits, dim=1)    
+                probs  = F.softmax(logits, dim=1)
                 frames = defaultdict(list)
+                emb_frames = defaultdict(list)
                 for i, pth in enumerate(image_paths):
                     fid = extract_frame_id(pth)
                     frames[fid].append((i, probs[i]))
+                    emb_frames[fid].append((i, embeddings[i]))
 
                 # 4) TRAINING branch: differentiable
                 if train_gnn:
                     out = torch.zeros_like(probs)
-                    for lst in frames.values():
+                    for fid in frames:
+                        lst = frames[fid]
+                        emb_lst = emb_frames[fid]
                         idxs, ps = zip(*sorted(lst, key=lambda x: x[0]))
-                        P = torch.stack(ps)                     
-                        comb = self.color_gnn.forward_combined(P)  
+                        _, es = zip(*sorted(emb_lst, key=lambda x: x[0]))
+                        P = torch.stack(ps)
+                        E = torch.stack(es)
+                        comb = self.color_gnn.forward_combined(E, P)
                         out[list(idxs)] = comb
                     return F.log_softmax(out, dim=1)
 
                 # 5) INFERENCE branch: Hungarian
                 final = torch.full_like(logits, -1000.0)
-                for lst in frames.values():
+                for fid in frames:
+                    lst = frames[fid]
+                    emb_lst = emb_frames[fid]
                     idxs, ps = zip(*sorted(lst, key=lambda x: x[0]))
+                    _, es = zip(*sorted(emb_lst, key=lambda x: x[0]))
                     P = torch.stack(ps)
-                    # pass TinyViT probs for top-K selection
-                    assignments = self.color_gnn.assign(P, tinyvit_probs=P)  # length N_birds
+                    E = torch.stack(es)
+                    assignments = self.color_gnn.assign(E, P, tinyvit_probs=P)  # length N_birds
                     for img_idx, color_idx in zip(idxs, assignments):
                         final[img_idx, color_idx] = 1000.0
                 return final
