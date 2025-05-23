@@ -4,7 +4,7 @@ import pickle
 import os
 
 # Path to your evaluation results pickle file
-PKL_PATH = '/mydata/vocim/zachary/color_prediction/gnn_enhancement/weighted_sampler_prob_bird_nodes/ambig_res/eval_results/evaluation_metrics.pkl'
+PKL_PATH = '/mydata/vocim/zachary/color_prediction/gnn_enhancement/embedding_bird_nodes_5_lay/normal_res/eval_results/evaluation_metrics.pkl'
 
 # Output directory for plots
 outdir = 'confidence_report'
@@ -92,11 +92,23 @@ def plot_cdf(data, xlabel, title, filename):
     sorted_data = np.sort(data)
     cdf = np.arange(1, len(sorted_data)+1) / len(sorted_data)
     plt.figure(figsize=(8,5))
-    plt.plot(sorted_data, cdf)
+    plt.plot(sorted_data, cdf, label='CDF')
     plt.xlabel(xlabel)
     plt.ylabel('Cumulative Fraction')
     plt.title(title)
     plt.grid(True)
+
+    quantile = 0.95 
+    x_q = np.percentile(data, quantile*100)
+    y_q = quantile
+    # find closest CDF value to qunatile for annotation
+    idx_95 = np.searchsorted(cdf, y_q)
+    x_95_actual = sorted_data[idx_95] if idx_95 < len(sorted_data) else sorted_data[-1]
+    plt.axvline(x=x_q, color='red', linestyle='--', label=f'{quantile:.0%} qunatile\n({x_q:.3f})')
+    plt.axhline(y=y_q, color='red', linestyle='--')
+    plt.plot([x_q], [y_q], 'ro')
+    plt.annotate(f'({x_q:.3f}, {y_q:.2f})', xy=(x_q, y_q), xytext=(10, -20), textcoords='offset points')
+    plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(outdir, filename))
     plt.close()

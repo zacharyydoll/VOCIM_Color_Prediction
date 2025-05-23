@@ -32,7 +32,7 @@ def main(eval_json_data, img_dir = '/mydata/vocim/zachary/data/cropped'):
     eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
-    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/gnn_enhancement/weighted_sampler_prob_bird_nodes/top_colorid_best_model.pth')
+    loaded_acc = trainer.load_model(ckpt='/mydata/vocim/zachary/color_prediction/gnn_enhancement/embedding_bird_nodes_5_lay/top_colorid_best_model.pth')
 
     metrics = evaluate_model(model, eval_loader, device, num_classes)
     
@@ -72,5 +72,5 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
     return metrics
 
 if __name__=="__main__":
-    eval_json_data='/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json'
+    eval_json_data='/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json'
     main(eval_json_data = eval_json_data)
