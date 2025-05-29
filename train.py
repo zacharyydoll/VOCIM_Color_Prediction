@@ -41,7 +41,8 @@ def main(train_json_data, eval_json_data, img_dir):
     model = model.to(device)
 
     #load TinyViT checkpoint first 
-    pretrained_ckpt = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask/top_colorid_best_model_9831v_9765t.pth"
+    # pretrained_ckpt = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask/top_colorid_best_model_9831v_9765t.pth"
+    pretrained_ckpt = "/mydata/vocim/zachary/color_prediction/TinyViT_no_mask/top_colorid_best_model.pth"
     ambiguous_json_path = "/mydata/vocim/zachary/color_prediction/data/ambig_train_samples.json"
 
     if os.path.exists(pretrained_ckpt):

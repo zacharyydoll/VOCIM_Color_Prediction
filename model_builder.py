@@ -99,20 +99,16 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                 num_layers=glan_num_layers,
                 dropout=glan_dropout
             )
-            
-            # Store original forward method
+        # Always patch the forward method and save the original, even after loading weights
             original_forward = model.forward
-            
+            model._original_forward = original_forward
             def new_forward(self, x, image_paths=None, use_gnn=False, train_gnn=False):
-                # 1) get TinyViT embeddings and logits
                 embeddings = self.forward_features(x)  # shape: (batch, embedding_dim)
                 logits = original_forward(x)           # shape: (batch, num_classes)
-
-                # 2) if we're NOT using the GNN, just return logits
-                if not use_gnn or image_paths is None:
+                if not use_gnn or image_paths is None or not hasattr(self, 'color_gnn'):
                     return logits
-
-                # 3) group by frame
+                import torch.nn.functional as F
+                from collections import defaultdict
                 probs  = F.softmax(logits, dim=1)
                 frames = defaultdict(list)
                 emb_frames = defaultdict(list)
@@ -120,8 +116,6 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                     fid = extract_frame_id(pth)
                     frames[fid].append((i, probs[i]))
                     emb_frames[fid].append((i, embeddings[i]))
-
-                # 4) TRAINING branch: differentiable
                 if train_gnn:
                     out = torch.zeros_like(probs)
                     for fid in frames:
@@ -134,8 +128,6 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                         comb = self.color_gnn.forward_combined(E, P)
                         out[list(idxs)] = comb
                     return F.log_softmax(out, dim=1)
-
-                # 5) INFERENCE branch: Hungarian
                 final = torch.full_like(logits, -1000.0)
                 for fid in frames:
                     lst = frames[fid]
@@ -148,10 +140,7 @@ def build_model(pretrained=True, dropout_rate=0.5, num_classes=8, input_channels
                     for img_idx, color_idx in zip(idxs, assignments):
                         final[img_idx, color_idx] = 1000.0
                 return final
-                
-            # Bind the new forward method to the model
             model.forward = new_forward.__get__(model)
-            
         return model
     
     else: 

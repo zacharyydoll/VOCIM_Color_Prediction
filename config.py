@@ -2,7 +2,7 @@
 model_used = "tinyvit" # "tinyvit" or "resnet"
 
 # settings
-batch_size = 16 # was 16, increased temporarily for debugging
+batch_size = 8 # was 16, increased temporarily for debugging
 num_epochs = 50
 dropout_rate = 0.3
 learning_rate = 1e-04 # transformer learning rate 

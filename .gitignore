@@ -28,3 +28,5 @@ init_git.sh
 eval_results/
 checkpoints/
 gnn_enhancement/
+deep_ensembles/ensembles/
+model_archives/
