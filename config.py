@@ -1,7 +1,7 @@
 # model
 model_used = "tinyvit" # "tinyvit" or "resnet"
 
-# settings
+# TinyViT settings
 batch_size = 8 # was 16, increased temporarily for debugging
 num_epochs = 50
 dropout_rate = 0.3
@@ -37,6 +37,8 @@ glan_lr = 1e-04 # TODO: already tried with 2e-4, 5e-5 -> <97% acc
 glan_early_stop = 20    
 glan_epochs = 60
 glan_weight_decay = 0.01 # was 1e-4 -> ~96% acc stabilization
+
+ensemble_unfreeze_all=True
 
 # Before weighted sampler, layer =4, epochs = 80, early_stop=25, learning_rate=5e-4
 
