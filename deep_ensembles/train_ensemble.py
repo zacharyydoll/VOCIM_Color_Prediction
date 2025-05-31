@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from model import Trainer
 from model_builder import build_model
-from dataloader import get_train_dataloder, get_eval_dataloder
+from dataloader import get_train_dataloader, get_eval_dataloader
 from utils import save_checkpoint, save_best_model
 
 import torch.nn as nn
@@ -113,14 +113,14 @@ def main(args):
 
     # 8) DataLoaders (same as train.py)
     ambiguous_json_path = "data/ambig_train_samples.json"
-    train_loader = get_train_dataloder(
+    train_loader = get_train_dataloader(
         args.train_json_data,
         args.img_dir,
         batch_size=batch_size,
         ambiguous_json_path=ambiguous_json_path,
         ambiguous_factor=sampler_ambig_factor
     )
-    eval_loader = get_eval_dataloder(args.eval_json_data, args.img_dir, batch_size=batch_size)
+    eval_loader = get_eval_dataloader(args.eval_json_data, args.img_dir, batch_size=batch_size)
 
     # 9) Prepare logging
     #    We want all of this seed’s checkpoints (best + ckpt) in args.output_dir

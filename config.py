@@ -3,7 +3,7 @@ model_used = "tinyvit" # "tinyvit" or "resnet"
 
 # TinyViT settings
 batch_size = 8 # was 16, increased temporarily for debugging
-num_epochs = 50
+num_epochs = 35
 dropout_rate = 0.3
 learning_rate = 1e-04 # transformer learning rate 
 weight_decay = 0.01
@@ -34,7 +34,7 @@ glan_hidden_dim = 256
 glan_num_layers = 5  # previously was 4 -> 97.95% acc. TODO: try with 3 or 5 
 glan_dropout = 0.1  # already tried 0.2 -> worse results 
 glan_lr = 1e-04 # TODO: already tried with 2e-4, 5e-5 -> <97% acc
-glan_early_stop = 20    
+glan_early_stop = 15    
 glan_epochs = 60
 glan_weight_decay = 0.01 # was 1e-4 -> ~96% acc stabilization
 

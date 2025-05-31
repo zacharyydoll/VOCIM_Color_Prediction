@@ -14,7 +14,7 @@ import numpy as np
 
 from model import Trainer
 from dataset import ImageDataset
-from dataloader import get_eval_dataloder, get_train_dataloder
+from dataloader import get_eval_dataloader, get_train_dataloader
 from config import (
     use_glan, batch_size, num_epochs, dropout_rate, learning_rate, weight_decay,
     scheduler_mode, scheduler_factor, scheduler_patience, num_classes, model_name,
@@ -155,15 +155,15 @@ def main(train_json_data, eval_json_data, img_dir):
     with open("logs/output_summary.log", "w") as f:
         f.write(summary)
 
-    #train_loader = get_train_dataloder(train_json_data, img_dir, batch_size=batch_size)
-    train_loader = get_train_dataloder(
+    #train_loader = get_train_dataloader(train_json_data, img_dir, batch_size=batch_size)
+    train_loader = get_train_dataloader(
         train_json_data,
         img_dir,
         batch_size=batch_size,
         ambiguous_json_path=ambiguous_json_path,
         ambiguous_factor=sampler_ambig_factor
     )
-    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=batch_size)
+    eval_loader = get_eval_dataloader(eval_json_data, img_dir, batch_size=batch_size)
     
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
     

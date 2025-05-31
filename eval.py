@@ -5,7 +5,7 @@ import timm
 from torch.optim import AdamW
 from model import Trainer
 from dataset import ImageDataset
-from dataloader import get_eval_dataloder, get_train_dataloder
+from dataloader import get_eval_dataloader, get_train_dataloader
 from config import (
     batch_size, num_epochs, dropout_rate, 
     learning_rate, weight_decay, scheduler_factor, 
@@ -41,7 +41,7 @@ def main(eval_json_data=None, img_dir=None, model_path=None, output_dir=None):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
-    eval_loader = get_eval_dataloder(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
+    eval_loader = get_eval_dataloader(eval_json_data, img_dir, batch_size=eval_batch_size, num_workers=0)
 
     trainer = Trainer(model=model, loss=criterion, optimizer=optimizer, device=device)
     loaded_acc = trainer.load_model(ckpt=model_path)

@@ -1,6 +1,7 @@
 from torch.utils.data import DataLoader
 from dataset import ImageDataset
 from sampler import ClassBalancedSampler
+from sampler_framewise import FrameBatchSampler
 from PIL import Image
 from PIL import ImageOps
 from torchvision import transforms
@@ -32,21 +33,46 @@ train_transform = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
-def get_train_dataloder(json_file, img_dir, batch_size, ambiguous_json_path=None, ambiguous_factor=sampler_ambig_factor):
-    transform = train_transform # using letteboxing to 512
-    train_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
-    sampler = ClassBalancedSampler(train_data, ambiguous_json_path=ambiguous_json_path, ambiguous_factor=ambiguous_factor).get_sampler()
-    train_dataloader = DataLoader(train_data, sampler = sampler, batch_size=batch_size)
+# def get_train_dataloader(json_file, img_dir, batch_size, ambiguous_json_path=None, ambiguous_factor=sampler_ambig_factor):
+#     transform = train_transform # using letteboxing to 512
+#     train_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
+#     sampler = ClassBalancedSampler(train_data, ambiguous_json_path=ambiguous_json_path, ambiguous_factor=ambiguous_factor).get_sampler()
+#     train_dataloader = DataLoader(train_data, sampler = sampler, batch_size=batch_size)
+#     return train_dataloader
+
+def get_train_dataloader(json_file, img_dir, batch_size, ambiguous_json_path=None, ambiguous_factor=5):
+    train_data = ImageDataset(data_path=json_file, img_dir=img_dir, transform=train_transform)
+    batch_sampler = FrameBatchSampler(
+        train_data, batch_size=batch_size,
+        ambiguous_json_path=ambiguous_json_path,
+        ambiguous_factor=ambiguous_factor,
+        shuffle=True
+    )
+    train_dataloader = DataLoader(train_data, batch_sampler=batch_sampler)
     return train_dataloader
 
-def get_eval_dataloder(json_file, img_dir, batch_size, num_workers=0):
-    transform = transforms.Compose([
-        transforms.Lambda(lambda img: letterbox(img, size=(512, 512))),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225])
-    ])
-    eval_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
-    # sampler = ClassBalancedSampler(eval_data.labels).get_sampler()
-    eval_dataloader = DataLoader(eval_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=False)
+# def get_eval_dataloader(json_file, img_dir, batch_size, num_workers=0):
+#     transform = transforms.Compose([
+#         transforms.Lambda(lambda img: letterbox(img, size=(512, 512))),
+#         transforms.ToTensor(),
+#         transforms.Normalize(mean=[0.485, 0.456, 0.406],
+#                              std=[0.229, 0.224, 0.225])
+#     ])
+#     eval_data = ImageDataset(data_path = json_file, img_dir = img_dir, transform=transform)
+#     # sampler = ClassBalancedSampler(eval_data.labels).get_sampler()
+#     eval_dataloader = DataLoader(eval_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=False)
+#     return eval_dataloader
+
+def get_eval_dataloader(json_file, img_dir, batch_size, use_framewise=False, ambiguous_json_path=None, ambiguous_factor=1, num_workers=0):
+    eval_data = ImageDataset(data_path=json_file, img_dir=img_dir, transform=train_transform)
+    if use_framewise:
+        batch_sampler = FrameBatchSampler(
+            eval_data, batch_size=batch_size,
+            ambiguous_json_path=ambiguous_json_path,
+            ambiguous_factor=ambiguous_factor,
+            shuffle=False  # usually don't shuffle for eval
+        )
+        eval_dataloader = DataLoader(eval_data, batch_sampler=batch_sampler, num_workers=num_workers, pin_memory=False)
+    else:
+        eval_dataloader = DataLoader(eval_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=False)
     return eval_dataloader
