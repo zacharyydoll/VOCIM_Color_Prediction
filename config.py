@@ -35,7 +35,7 @@ glan_num_layers = 5  # previously was 4 -> 97.95% acc. TODO: try with 3 or 5
 glan_dropout = 0.1  # already tried 0.2 -> worse results 
 glan_lr = 1e-04 # TODO: already tried with 2e-4, 5e-5 -> <97% acc
 glan_early_stop = 15    
-glan_epochs = 60
+glan_epochs = 35
 glan_weight_decay = 0.01 # was 1e-4 -> ~96% acc stabilization
 
 ensemble_unfreeze_all=True

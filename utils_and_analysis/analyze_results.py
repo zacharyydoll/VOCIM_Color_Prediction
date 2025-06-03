@@ -66,7 +66,7 @@ def save_classification_report(labels, predictions, output_path):
 def main():
     # results file name from eval.py
     #results_file = "../output_top.pkl"
-    results_file = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/evaluation_metrics.pkl"
+    results_file = "/mydata/vocim/zachary/color_prediction/model_archives/ResNet50_no_mask/top_colorid_best_model.pth"
     
     results = load_results(results_file)
     
@@ -86,7 +86,7 @@ def main():
     print("Classification Report:")
     print(report)
     
-    output_path = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/normal_test_set_report.json"
+    output_path = "/mydata/vocim/zachary/color_prediction/model_archives/ResNet50_no_mask/normal_report.json"
     save_classification_report(labels, predictions, output_path)
     
     # Visualize a few misclassified examples for error analysis

@@ -22,7 +22,7 @@ import argparse
 
 
 def main(eval_json_data=None, img_dir=None, model_path=None, output_dir=None):
-    eval_batch_size = 32
+    eval_batch_size = 32 # was 32, lowered to 8 for ensemble evaluation.
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # default args 
