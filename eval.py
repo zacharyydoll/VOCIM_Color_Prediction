@@ -19,6 +19,8 @@ from utils import load_checkpoint
 import os
 from color_gnn import extract_frame_id
 import argparse
+import json
+import numpy as np
 
 
 def main(eval_json_data=None, img_dir=None, model_path=None, output_dir=None):
@@ -54,8 +56,22 @@ def main(eval_json_data=None, img_dir=None, model_path=None, output_dir=None):
     with open(pkl_path, 'wb') as f:
         pickle.dump(metrics, f)
     
-    # import subprocess
-    # subprocess.run(['python3', 'evaluation_metrics.py', '--output_dir', output_dir])
+    log_path = os.path.join(output_dir, 'eval_results.log')
+    with open(log_path, 'w') as f:
+        if 'confusion_matrix' in metrics:
+            f.write("confusion_matrix: \n")
+            f.write(np.array2string(np.array(metrics['confusion_matrix'])) + "\n\n")
+        if 'classification_report' in metrics:
+            f.write("classification_report: ")
+            f.write(json.dumps(metrics['classification_report'], indent=2))
+            f.write("\n\n")
+        for key in ['roc_auc', 'f1_score', 'average_precision', 'accuracy']:
+            if key in metrics:
+                f.write(f"{key}: {metrics[key]}\n")
+        f.write("\n")
+        # probability examples for interpretation
+        f.write("TinyViT probabilities: " + str(metrics['tinyvit_probabilities'][:2]) + "...\n")
+        f.write("gnn_soft_outputs: " + str(metrics['gnn_soft_outputs'][:2]) + "...\n")
     
     return metrics
 
@@ -84,7 +100,7 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
             tinyvit_probabilities.extend(tinyvit_probs.cpu().numpy())
 
             # GNN-enhanced outputs (for inference)
-            outputs = model(images)  # This is the hard-assignment output for inference
+            outputs = model(images)  # hard-assignment output for inference
             if hasattr(outputs, 'logits'):
                 outputs = outputs.logits
             evaluator.update(outputs, labels, image_paths=image_paths)
@@ -110,7 +126,9 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
                     P = torch.stack(ps)
                     E = torch.stack(es)
                     soft_out = model.color_gnn.forward_combined(E, P)
-                    gnn_soft_outputs.extend(soft_out.cpu().numpy())
+                    # softmax to get valid probs
+                    soft_out_probs = torch.nn.functional.softmax(torch.tensor(soft_out), dim=1)
+                    gnn_soft_outputs.extend(soft_out_probs.cpu().numpy())
     
     metrics = evaluator.compute_metrics()
     metrics['gnn_soft_outputs'] = gnn_soft_outputs

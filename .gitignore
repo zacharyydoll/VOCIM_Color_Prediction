@@ -29,4 +29,6 @@ eval_results/
 checkpoints/
 gnn_enhancement/
 deep_ensembles/ensembles/
+deep_ensembles/group_results.sh
+deep_ensembles/uncertainties/
 model_archives/
