@@ -67,23 +67,22 @@ def main(train_json_data, eval_json_data, img_dir):
             for p in model.parameters():
                 p.requires_grad = False
 
-            # 2) unfreeze GNN
+            # unfreeze GNN
             gnn_params = list(model.color_gnn.parameters())
             for p in gnn_params:
                 p.requires_grad = True
 
-            # 3) unfreeze last *transformer* block
+            # unfreeze last transformer block
             last_stage   = model.stages[-1]
             last_block   = last_stage.blocks[-1]
             backbone_params = list(last_block.parameters())
 
-            # 4) unfreeze the classification head
+            # unfreeze classification head
             head_params = list(model.head.parameters())
 
             for p in backbone_params + head_params:
                 p.requires_grad = True
 
-            # 5) optimizer with two param-groups
             optimizer = optim.AdamW(
                 [
                 { 'params': backbone_params + head_params,
@@ -95,7 +94,7 @@ def main(train_json_data, eval_json_data, img_dir):
                 ]
             )
     else:
-        # no GLAN: fine-tune everything
+        # no GLAN, fine-tune everything
         for p in model.parameters():
             p.requires_grad = True
         optimizer = optim.AdamW(

@@ -21,7 +21,7 @@ train_transform = transforms.Compose([
     transforms.Lambda(lambda img: letterbox(img, size=(512, 512))),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
-    transforms.RandomRotation(10), # rotate images by +/- 10 degrees (2)
+    transforms.RandomRotation(10), # rotate images by +/- 10 degrees 
     transforms.RandomAffine(
          degrees=10,              # further rotation 
          translate=(0.1, 0.1),    # random translation in x and y directions (10% of image size)
@@ -70,7 +70,7 @@ def get_eval_dataloader(json_file, img_dir, batch_size, use_framewise=False, amb
             eval_data, batch_size=batch_size,
             ambiguous_json_path=ambiguous_json_path,
             ambiguous_factor=ambiguous_factor,
-            shuffle=False  # usually don't shuffle for eval
+            shuffle=False  
         )
         eval_dataloader = DataLoader(eval_data, batch_sampler=batch_sampler, num_workers=num_workers, pin_memory=False)
     else:

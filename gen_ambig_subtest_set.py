@@ -4,11 +4,10 @@ import yaml
 import pandas as pd
 from PIL import Image
 
-TEST_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/newdata_cls_train_vidsplit_n.json" # /mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json
+TEST_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/newdata_cls_train_vidsplit_n.json" 
 SHARED_ANNOTATIONS_BASE = "/mydata/vocim/zachary/data/shared/KeypointAnnotations"
-OUTPUT_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/ambig_train_samples.json" # /mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json
+OUTPUT_JSON_PATH = "/mydata/vocim/zachary/color_prediction/data/ambig_train_samples.json" 
 
-# Load bird identity mapping and color map if needed
 with open("/mydata/vocim/zachary/color_prediction/newdata_bird_identity.yaml", "r") as f:
     bird_identity_mapping = yaml.safe_load(f)
 with open("/mydata/vocim/zachary/color_prediction/newdata_colormap.yaml", "r") as f:
@@ -50,7 +49,7 @@ def process_directory_for_ambiguity(annotation_dir, ambiguous_files):
         if not os.path.exists(img_path):
             continue
 
-        # Group keypoints by identity
+        # group keypoints by identity
         identity_groups = {}
         for i in range(3, len(row), 2):
             x = row[i]
@@ -70,7 +69,6 @@ def process_directory_for_ambiguity(annotation_dir, ambiguous_files):
                 except Exception as e:
                     continue
 
-        # Open the image for cropping computation
         try:
             image = Image.open(img_path)
         except Exception as e:
@@ -79,13 +77,12 @@ def process_directory_for_ambiguity(annotation_dir, ambiguous_files):
         base, ext = os.path.splitext(file_name)
         rel_path = os.path.relpath(annotation_dir, SHARED_ANNOTATIONS_BASE)
         
-        # Process each group individually. Instead of marking the entire row as ambiguous,
-        # check if the crop for the primary identity contains another bird's backpack.
+        # Process each group individually, and check if crop for primary identity contains another bird's backpack.
         for primary_id, primary_group in identity_groups.items():
             if not primary_group['coords'] or not primary_group['backpack_coords']:
                 continue
 
-            # Compute bounding box for the primary identity crop:
+            # compute bounding box for the primary identity crop
             xs = [pt[0] for pt in primary_group['coords']]
             ys = [pt[1] for pt in primary_group['coords']]
             min_x, max_x = min(xs), max(xs)
@@ -97,7 +94,7 @@ def process_directory_for_ambiguity(annotation_dir, ambiguous_files):
             crop_max_x = min(max_x + margin_x, image.width)
             crop_max_y = min(max_y + margin_y, image.height)
             
-            # Check if any other backpack coordinate falls within this crop
+            # check if any other backpack coord falls within the crop
             crop_is_ambiguous = False
             for other_id, other_group in identity_groups.items():
                 if other_id == primary_id:
@@ -142,8 +139,7 @@ def main():
 
     print(f"Identified {len(ambiguous_files)} ambiguous image file names.")
 
-    # Filter test JSON images and annotations based on ambiguous_files,
-    # and filter out any images missing the "id" field.
+    # filter test JSON images and annotations based on ambiguous_files,
     filtered_images = [
         img for img in test_data.get("images", [])
         if "id" in img and img.get("file_name") in ambiguous_files
@@ -153,7 +149,7 @@ def main():
         if ann.get("image_id") in {img["id"] for img in filtered_images}
     ]
 
-    # Reindex filtered_images and create an old-to-new id mapping.
+    # reindex filtered_images and create an new id mapping
     new_images = []
     new_id_map = {}
     for new_id, img in enumerate(filtered_images):
@@ -161,7 +157,7 @@ def main():
         old_id = img["id"]
         new_id_map[old_id] = new_id
 
-    # Update the annotations to use the new image ids.
+    # Update the annotations to use the new image ids
     new_annotations = []
     for ann in filtered_annotations:
         old_img_id = ann["image_id"]

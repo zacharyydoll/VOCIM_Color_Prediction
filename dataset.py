@@ -23,7 +23,7 @@ def extract_frame_id(file_name):
     match = re.match(r'(img\d+)_bird_\d+\.png', file_name)
     if match:
         return match.group(1)
-    # Return a default frame ID if pattern doesn't match
+    # Return default frame ID if pattern doesn't match
     return "unknown_frame"
 
 class ImageDataset(Dataset):
@@ -58,7 +58,6 @@ class ImageDataset(Dataset):
         self.valid_indices = []
         for idx, annotation in enumerate(self.annotations):
             try:
-                # Try to get the label to validate the annotation
                 self.get_effective_label(annotation)
                 img_idx = annotation['image_id']
                 file_name = self.img_paths[img_idx]['file_name']
@@ -82,7 +81,7 @@ class ImageDataset(Dataset):
         file_name = self.img_paths[annotation['image_id']]['file_name']
         directory = os.path.normpath(os.path.dirname(file_name))
         
-        # Try to find the directory in the mapping
+        # find the directory in the mapping
         if directory not in self.bird_identity_mapping:
             alt_directory = os.path.basename(directory)
             if alt_directory in self.bird_identity_mapping:

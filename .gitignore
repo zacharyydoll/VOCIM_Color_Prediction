@@ -32,3 +32,4 @@ deep_ensembles/ensembles/
 deep_ensembles/group_results.sh
 deep_ensembles/uncertainties/
 model_archives/
+lin_asg_*

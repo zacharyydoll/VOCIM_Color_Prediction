@@ -29,7 +29,7 @@ num_classes = 8
 model_name = 'tiny_vit_21m_512.dist_in22k_ft_in1k'
 
 # ColorGNN configuration
-use_glan = True  # now the color GNN (kept GLAN name for backwards compatibility)
+use_glan = False  # now the color GNN (kept GLAN name for backwards compatibility)
 glan_hidden_dim = 256  
 glan_num_layers = 5  # previously was 4 -> 97.95% acc. TODO: try with 3 or 5 
 glan_dropout = 0.1  # already tried 0.2 -> worse results 

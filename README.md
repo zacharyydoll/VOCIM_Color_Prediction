@@ -191,7 +191,7 @@ The model includes a Graph Neural Network (GNN) component that:
 - Uses separate dropout for the GNN component
 - Creates a bipartite graph between birds and colors
 - Processes relationships between birds and colors in the same frame
-- Currently achieves ~92.8% accuracy on the ambiguous subset
+- Currently achieves 94.24% accuracy on the ambiguous subset
 
 ## Linear Assignment Evaluation
 
@@ -204,9 +204,9 @@ The linear assignment evaluation enforces the constraint that each color can onl
 3. Uses the Hungarian algorithm to find optimal unique color assignments
 4. Computes accuracy across all frames
 
-Results show that enforcing unique color assignments improves accuracy:
-- Normal test set: 96.64% → 98.03%
-- Ambiguous test set: 92.81% → 94.96%
+## Results 
+
+Our results demonstrate that the mask-guided TinyViT outperforms a ResNet-50 baseline, achieving 97.54% accuracy on unambiguous scenes and 92.81% accuracy on crowded (ambiguous) scenes. With the addition of the GNN and the linear assignment step, overall accuracy improves to 98%.
 
 ## Contact
 

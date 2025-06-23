@@ -73,7 +73,7 @@ class Trainer:
                 labels = batch['label'].to(self.device)
                 image_paths = batch['image_path']
 
-                # 1) Raw TinyViT outputs → compute log‐probs before NLLLoss
+                # Raw TinyViT outputs, compute log‐probs before NLLLoss
                 raw_logits = self.model(
                     images,
                     image_paths=image_paths,
@@ -83,11 +83,11 @@ class Trainer:
                 raw_pred = raw_logits.argmax(dim=1)
                 total_raw_correct += (raw_pred == labels).sum().item()
 
-                # Loss on the raw branch
+                # Loss on raw branch
                 loss = self.loss(raw_logprobs, labels)
                 total_loss += loss.item() * labels.size(0)
 
-                # 2) GNN‐enhanced outputs (already log‐softmax in train branch)
+                # GNN‐enhanced outputs (already log‐softmax in train branch)
                 gnn_logits = self.model(
                     images,
                     image_paths=image_paths,

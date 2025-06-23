@@ -5,7 +5,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import pickle
 from tqdm import tqdm
 import os
-from config import num_classes
 import sys
 import yaml
 import json
@@ -14,6 +13,7 @@ import re
 def setup_logging(results_dir):
     """Set up logging to both console and file."""
     log_path = os.path.join(results_dir, 'linear_assignment_eval.log')
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
     log_file = open(log_path, 'w')
     
     class Logger:
@@ -21,170 +21,129 @@ def setup_logging(results_dir):
             self.log_file = log_file
             
         def write(self, message):
+            sys.__stdout__.write(message)
             self.log_file.write(message)
-            sys.stdout.write(message)
             
         def flush(self):
+            sys.__stdout__.flush()
             self.log_file.flush()
-            sys.stdout.flush()
     
     sys.stdout = Logger(log_file)
     return log_file
 
 def load_predictions(results_dir):
     """Load predictions from evaluation metrics pickle file."""
-    metrics_file = os.path.join(results_dir, 'evaluation_metrics.pkl')
+    metrics_file = os.path.join(results_dir, 'eval_results.pkl')
     with open(metrics_file, 'rb') as f:
         metrics = pickle.load(f)
     return metrics
 
-def get_available_colors(image_path, bird_identity_yaml, colormap_yaml):
-    """Get all backpack colors present in an image."""
-    # Extract the full path components
-    # Example: /mydata/vocim/zachary/data/cropped/VOCIM_juvExpBP05/labeled-data_topview/BP_2023-06-30_06-07-02_808380_0020000/img04168_bird_1.png
-    path_parts = image_path.split('/')
-    
-    # Find the experiment directory (e.g., VOCIM_juvExpBP05)
-    exp_dir = None
-    for part in path_parts:
-        if part.startswith('VOCIM_'):
-            exp_dir = part
-            break
-    
-    if exp_dir is None:
-        raise ValueError(f"Could not find experiment directory in path: {image_path}")
-    
-    # Get the view type (e.g., labeled-data_topview)
-    view_type = path_parts[-3]
-    
-    # Get the BP directory name
-    bp_dir = path_parts[-2]
-    
-    # Construct the full path as it appears in the YAML
-    yaml_path = f"{exp_dir}/{view_type}/{bp_dir}"
-    
-    # Load bird identity mapping
-    with open(bird_identity_yaml, 'r') as f:
-        bird_identity_mapping = yaml.safe_load(f)
-    
-    # Load color map
-    with open(colormap_yaml, 'r') as f:
-        color_map = yaml.safe_load(f)
-    
-    # Get colors for all birds in this directory
-    if yaml_path in bird_identity_mapping:
-        bird_mapping = bird_identity_mapping[yaml_path]
-    else:
-        # Try to find a matching directory by removing the frame number
-        # For example, "BP_2023-06-30_06-07-02_808380_0020000" -> "BP_2023-06-30_06-07-02_808380"
-        base_bp_dir = '_'.join(bp_dir.split('_')[:-1])
-        base_yaml_path = f"{exp_dir}/{view_type}/{base_bp_dir}"
-        if base_yaml_path in bird_identity_mapping:
-            bird_mapping = bird_identity_mapping[base_yaml_path]
-        else:
-            raise ValueError(f"Directory {yaml_path} not found in bird identity mapping.")
-    
-    # Get numeric labels for all colors
-    colors = set()
-    for color_name in bird_mapping.values():
-        if color_name in color_map:
-            colors.add(color_map[color_name])
-    
-    return list(colors)
-
-def evaluate_with_linear_assignment(metrics, bird_identity_yaml, colormap_yaml):
+def evaluate_with_linear_assignment(metrics):
     """Evaluate predictions using linear assignment with softmax probabilities."""
-    predictions = metrics['predictions']
-    probabilities = metrics['probabilities']  # Get softmax probabilities
+    if 'tinyvit_probabilities' in metrics:
+        probabilities = metrics['tinyvit_probabilities']
+    elif 'probabilities' in metrics:
+        probabilities = metrics['probabilities']
+    else:
+        raise KeyError("Could not find a probabilities key ('tinyvit_probabilities' or 'probabilities') in the metrics file.")
+        
     labels = metrics['labels']
     image_paths = metrics['image_paths']
     
-    total_correct = 0
-    total_images = len(predictions)
-    
-    # Group predictions by frame (remove bird number from path)
+    # Group predictions by frame
     frame_groups = {}
-    for probs, pred, label, img_path in zip(probabilities, predictions, labels, image_paths):
-        # Extract frame path by removing bird number
-        frame_path = re.sub(r'_bird_\d+\.png$', '.png', img_path)
-        if frame_path not in frame_groups:
-            frame_groups[frame_path] = {
-                'probs': [],
-                'preds': [],
-                'labels': [],
-                'img_paths': []
-            }
-        frame_groups[frame_path]['probs'].append(probs)
-        frame_groups[frame_path]['preds'].append(pred)
-        frame_groups[frame_path]['labels'].append(label)
-        frame_groups[frame_path]['img_paths'].append(img_path)
+    for i, img_path in enumerate(image_paths):
+        frame_id = re.sub(r'_bird_\d+\.png$', '', img_path)
+        if frame_id not in frame_groups:
+            frame_groups[frame_id] = []
+        frame_groups[frame_id].append(i)
     
-    # For each frame
-    for frame_path, group in frame_groups.items():
-        # Get all available colors in this frame (use first image path)
-        available_colors = get_available_colors(group['img_paths'][0], bird_identity_yaml, colormap_yaml)
-        n_predictions = len(group['probs'])
-        n_colors = len(available_colors)
+    total_correct = 0
+    total_assigned = 0
+    assigned_labels = []
+    true_labels_for_assigned = []
+    
+    # process each frame
+    for frame_id, indices in tqdm(frame_groups.items(), desc="Processing Frames"):
+        frame_probs = np.array([probabilities[i] for i in indices])
+        frame_labels = [labels[i] for i in indices]
         
-        if n_predictions > n_colors:
+        num_birds = len(frame_probs)
+        if num_birds == 0:
             continue
         
-        # Create cost matrix using softmax probabilities
-        # Rows: predictions, Columns: available colors
-        cost_matrix = np.ones((n_predictions, n_colors))
-        for i, probs in enumerate(group['probs']):
-            for j, color in enumerate(available_colors):
-                cost_matrix[i, j] = 1 - probs[color]  # Lower cost for higher probability
+        # sum probs to find the most likely colors for this frame
+        color_sums = frame_probs.sum(axis=0)
         
-        # Use Hungarian algorithm to find best matching
+        # select top-k colors, where k is the number of birds
+        k = min(num_birds, len(color_sums))
+        top_k_color_indices = np.argsort(color_sums)[-k:][::-1]
+        
+        # reduced probability matrix
+        reduced_probs = frame_probs[:, top_k_color_indices]
+        
+        cost_matrix = 1 - reduced_probs
+        
+        # apply Hungarian algo
         row_ind, col_ind = linear_sum_assignment(cost_matrix)
         
-        # Get the assigned colors
-        assigned_colors = [available_colors[j] for j in col_ind]
+        # map assigned column indices back to original color indices
+        assigned_colors = [top_k_color_indices[j] for j in col_ind]
         
-        # Count correct assignments
-        for i, assigned_color in enumerate(assigned_colors):
-            if assigned_color == group['labels'][i]:
+        for i, original_idx in enumerate(row_ind):
+            assigned_labels.append(assigned_colors[i])
+            true_labels_for_assigned.append(frame_labels[original_idx])
+            if assigned_colors[i] == frame_labels[original_idx]:
                 total_correct += 1
-    
-    accuracy = total_correct / total_images
-    return accuracy
+        
+        total_assigned += len(row_ind)
 
-def process_results_directory(results_dir, bird_identity_yaml, colormap_yaml):
+    accuracy = total_correct / total_assigned if total_assigned > 0 else 0
+    
+    return accuracy, assigned_labels, true_labels_for_assigned
+
+
+def process_results_directory(results_dir):
     """Process all results in the directory."""
     metrics = load_predictions(results_dir)
     
-    # Calculate direct evaluation accuracy
-    direct_accuracy = np.mean(np.array(metrics['predictions']) == np.array(metrics['labels']))
+    direct_accuracy = accuracy_score(metrics['labels'], metrics['predictions'])
     
-    # Calculate linear assignment accuracy
-    la_accuracy = evaluate_with_linear_assignment(metrics, bird_identity_yaml, colormap_yaml)
+    la_accuracy, la_preds, la_labels = evaluate_with_linear_assignment(metrics)
     
-    # Print results
-    print(f"\nDirect Evaluation Accuracy: {direct_accuracy:.4f}")
-    print(f"Linear Assignment Accuracy: {la_accuracy:.4f}")
+    print("\n" + "="*50)
+    print(f"       Results for Directory: {results_dir}")
+    print("="*50 + "\n")
     
-    # Print confusion matrix and classification report for direct evaluation
-    print("\nConfusion Matrix (Direct Evaluation):")
-    print(confusion_matrix(metrics['labels'], metrics['predictions']))
-    print("\nClassification Report (Direct Evaluation):")
-    print(classification_report(metrics['labels'], metrics['predictions']))
+    print(f"Direct Evaluation Accuracy (per-crop): {direct_accuracy:.4f}")
+    print(f"Linear Assignment Accuracy (per-frame, leak-free): {la_accuracy:.4f}")
+    
+    print("\n--- Direct Evaluation Report ---")
+    print(classification_report(metrics['labels'], metrics['predictions'], zero_division=0))
+    
+    print("\n--- Linear Assignment Report ---")
+    print(classification_report(la_labels, la_preds, zero_division=0))
+    
+    print("\nConfusion Matrix (Linear Assignment):")
+    print(confusion_matrix(la_labels, la_preds))
+    print("\n" + "="*50)
+
 
 if __name__ == "__main__":
-    results_dir = "/mydata/vocim/zachary/color_prediction/TinyViT_with_mask_GLAN/report_normal_test_set"
-    bird_identity_yaml = "newdata_bird_identity.yaml"
-    colormap_yaml = "newdata_colormap.yaml"
-    
+    if len(sys.argv) > 1:
+        results_dir = sys.argv[1]
+    else:
+        results_dir = "/mydata/vocim/zachary/color_prediction/lin_asg_ambig_res"
+        print(f"Warning: No results directory provided. Using default: {results_dir}")
+
     if not os.path.exists(results_dir):
         print(f"Error: Results directory '{results_dir}' not found.")
         sys.exit(1)
+        
+    log_file = setup_logging(results_dir)
     
-    if not os.path.exists(bird_identity_yaml):
-        print(f"Error: Bird identity YAML file '{bird_identity_yaml}' not found.")
-        sys.exit(1)
-    
-    if not os.path.exists(colormap_yaml):
-        print(f"Error: Colormap YAML file '{colormap_yaml}' not found.")
-        sys.exit(1)
-    
-    process_results_directory(results_dir, bird_identity_yaml, colormap_yaml) 
+    try:
+        process_results_directory(results_dir)
+    finally:
+        log_file.close()
+        sys.stdout = sys.__stdout__ 

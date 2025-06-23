@@ -85,7 +85,7 @@ def process_directory(annotation_dir, cooccurrence_matrix, primary_counts, examp
         print(f"Error reading CSV data from {csv_file}: {e}")
         return
 
-    # Compute the relative directory (used in effective label mapping)
+    # Compute relative directory (used in effective label mapping)
     rel_dir = os.path.relpath(annotation_dir, SHARED_ANNOTATIONS_BASE)
     
     for idx, row in df.iterrows():
@@ -122,15 +122,14 @@ def process_directory(annotation_dir, cooccurrence_matrix, primary_counts, examp
                     print(f"Error processing coordinate at index {i}: {e}")
                     continue
 
-        # count number of valid birds (with backpack coordinate) in that row
+        # count nb of valid birds (with backpack coordinate) in that row
         num_valid = sum(1 for group in identity_groups.values() if group['backpack_coords'])
         if num_valid >= 2:
             global_stats["multiple"] += 1
 
-        # for each PRIMARY identity group 
         for primary_id, group in identity_groups.items():
             if not group['coords'] or not group['backpack_coords']:
-                continue  # Skip if no keypoints or no backpack coordinate.
+                continue  # skip if no keypoints or no backpack coordinate.
             
             # Compute bounding box from all keypoints (c.f. crop_annotations.py)
             xs = [pt[0] for pt in group['coords']]

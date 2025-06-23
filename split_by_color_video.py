@@ -98,8 +98,8 @@ def main():
                    'BP_2022-09-07_12-33-47_959910_0000000', 
                    'BP_2023-06-23_14-44-16_556681_0380000']
 
-    # for each annotation, group by color and then by video.
-    # color_groups[color][video_name] = list of annotation indices.
+    # for each annotation, group by color then by video
+    # color_groups[color][video_name] = list of annotation indices
     color_groups = {}
     for anno in data['annotations']:
         color = get_effective_color(anno, data['images'])

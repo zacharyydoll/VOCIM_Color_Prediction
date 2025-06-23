@@ -95,7 +95,7 @@ def main(args):
 
         trainable_params = gnn_params + backbone_params + head_params
 
-    # optimizer over only the unfrozen parameters
+    # optimizer over only unfrozen parameters
     optimizer = AdamW(
         trainable_params,
         lr=(learning_rate if ensemble_unfreeze_all else glan_lr),
@@ -111,7 +111,6 @@ def main(args):
         verbose=True
     )
 
-    # 8) DataLoaders (same as train.py)
     ambiguous_json_path = "data/ambig_train_samples.json"
     train_loader = get_train_dataloader(
         args.train_json_data,
@@ -122,8 +121,6 @@ def main(args):
     )
     eval_loader = get_eval_dataloader(args.eval_json_data, args.img_dir, batch_size=batch_size)
 
-    # 9) Prepare logging
-    #    We want all of this seed’s checkpoints (best + ckpt) in args.output_dir
     checkpoint_dir = os.path.abspath(args.output_dir)
     logs_dir = os.path.abspath(os.path.join(checkpoint_dir, '..', 'logs'))
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -132,7 +129,7 @@ def main(args):
     output_log_file = os.path.join(logs_dir, "output.log")
     summary_log_file = os.path.join(logs_dir, "output_summary.log")
 
-    # Redirect stdout/stderr
+    # redirect stdout/stderr
     sys.stdout = open(output_log_file, 'w')
     sys.stderr = sys.stdout
     summary_fh = open(summary_log_file, 'w')
@@ -142,7 +139,6 @@ def main(args):
         summary_fh.write(message + "\n")
         summary_fh.flush()
 
-    # 10) Print a short summary (adapted from train.py)
     model_type = model.__class__.__name__
     summary = f"""
     Training Summary (Ensemble member seed={args.seed}):
@@ -184,7 +180,6 @@ def main(args):
     """
     log_summary(summary)
 
-    # 11) Subclass Trainer → override run_model so it uses `checkpoint_dir`
     class EnsembleTrainer(Trainer):
         def __init__(self, model, optimizer, loss, device, checkpoint_dir):
             super().__init__(model, optimizer, loss, device)
@@ -219,7 +214,6 @@ def main(args):
                     scheduler.step(gnn_acc)
 
                 early_stoppage = glan_early_stop if args.use_glan else 10
-                # Save “best” model under checkpoint_dir
                 best_filename = os.path.join(self.checkpoint_dir, view + "_best_model.pth")
                 if gnn_acc > self.best_accuracy:
                     self.best_accuracy = save_best_model(
@@ -258,7 +252,7 @@ def main(args):
 
             log_summary("\nTraining complete.")
 
-    # 12) Instantiate and run the ensemble trainer
+    # Instantiate and run the ensemble trainer
     trainer = EnsembleTrainer(
         model=model,
         loss=nn.NLLLoss(),

@@ -10,7 +10,6 @@ PKL_PATH = '/mydata/vocim/zachary/color_prediction/eval_results/evaluation_metri
 outdir = 'confidence_report'
 os.makedirs(outdir, exist_ok=True)
 
-# 1. Load evaluation results
 with open(PKL_PATH, 'rb') as f:
     metrics = pickle.load(f)
 

@@ -20,18 +20,17 @@ class FrameBatchSampler(Sampler):
             file_name = self.dataset.img_paths[img_idx]['file_name']
             frame_id = file_name.split('_bird_')[0]
             self.frame_to_indices[frame_id].append(idx)
-            # Get class label for this crop
+            # get crop's class label
             label = self.dataset.get_effective_label(annotation)
             self.frame_to_classes[frame_id].append(label)
         self.frames = list(self.frame_to_indices.keys())
 
-        # Assign a single class to each frame (majority class, or first crop's class)
+        # assign single class to each frame (majority class or first crop's class)
         self.frame_class = {}
         for frame_id, class_list in self.frame_to_classes.items():
-            # Use majority class (or just class_list[0] if you prefer)
             self.frame_class[frame_id] = Counter(class_list).most_common(1)[0][0]
 
-        # Compute class weights (inverse frequency)
+        # compute class weights (inverse freq)
         all_classes = [self.frame_class[fid] for fid in self.frames]
         class_counts = np.bincount(all_classes)
         total_count = len(all_classes)
@@ -52,12 +51,12 @@ class FrameBatchSampler(Sampler):
                     self.frame_to_ambiguous[frame_id] = True
                     break
 
-        # Build sampling pool with oversampling and class balancing
+        # build sampling pool with oversampling and class balancing
         self.sampling_pool = []
         for frame_id in self.frames:
             weight = self.frame_weights[frame_id]
             n_copies = ambiguous_factor if self.frame_to_ambiguous[frame_id] else 1
-            # Multiply by weight (rounded to nearest int, or use weighted random sampling in __iter__)
+            # multiply by weight 
             n_copies = int(np.round(n_copies * weight))
             n_copies = max(n_copies, 1)
             self.sampling_pool.extend([frame_id] * n_copies)

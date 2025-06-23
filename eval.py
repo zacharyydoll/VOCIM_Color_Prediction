@@ -9,7 +9,7 @@ from dataloader import get_eval_dataloader, get_train_dataloader
 from config import (
     batch_size, num_epochs, dropout_rate, 
     learning_rate, weight_decay, scheduler_factor, 
-    scheduler_patience, num_classes, model_name
+    scheduler_patience, num_classes, model_name, use_glan
 )
 from model_builder import build_model
 from tqdm import tqdm
@@ -27,13 +27,12 @@ def main(eval_json_data=None, img_dir=None, model_path=None, output_dir=None):
     eval_batch_size = 32 # was 32, lowered to 8 for ensemble evaluation.
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # default args 
     if eval_json_data is None:
-        eval_json_data = '/mydata/vocim/zachary/color_prediction/data/newdata_test_vidsplit_n.json'
+        eval_json_data = '/mydata/vocim/zachary/color_prediction/data/mult_bkpk_sub_test_set.json'
     if img_dir is None:
         img_dir = '/mydata/vocim/zachary/data/cropped'
     if model_path is None:
-        model_path = '/mydata/vocim/zachary/color_prediction/gnn_enhancement/embedding_bird_nodes_5_lay/top_colorid_best_model.pth'
+        model_path = '/mydata/vocim/zachary/color_prediction/model_archives/TinyViT_with_mask/top_colorid_best_model_9831v_9765t.pth'
     if output_dir is None:
         output_dir = 'eval_results'
 
@@ -90,17 +89,17 @@ def evaluate_model(model, dataloader, device, num_classes, checkpoint_path=None)
             labels = batch['label'].to(device)
             image_paths = batch['image_path']  # get img paths from batch
             
-            # TinyViT (pre-GNN) outputs
-            tinyvit_logits = model(
-                images,
-                image_paths=image_paths,
-                use_gnn=False
-            )
+            if use_glan:
+                tinyvit_logits = model(images, image_paths=image_paths, use_gnn=False)
+                outputs = model(images)
+            else:
+                tinyvit_logits = model(images)
+                outputs = tinyvit_logits
+            
             tinyvit_probs = torch.nn.functional.softmax(tinyvit_logits, dim=1)
             tinyvit_probabilities.extend(tinyvit_probs.cpu().numpy())
 
             # GNN-enhanced outputs (for inference)
-            outputs = model(images)  # hard-assignment output for inference
             if hasattr(outputs, 'logits'):
                 outputs = outputs.logits
             evaluator.update(outputs, labels, image_paths=image_paths)
