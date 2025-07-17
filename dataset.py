@@ -7,6 +7,44 @@ from torch.utils.data import Dataset
 import re
 import yaml  
 from config import sigma_val, use_heatmap_mask
+import torchvision.transforms as transforms
+from dataloader import letterbox
+
+def transform_backpack_coords(original_coords, original_size, target_size=(512, 512)):
+    """
+    Transform backpack coordinates from original image space to letterboxed space.
+    
+    Args:
+        original_coords: (x, y) in original image coordinates
+        original_size: (width, height) of original image
+        target_size: (width, height) of target image (512, 512)
+    
+    Returns:
+        (x, y) in target image coordinates
+    """
+    orig_w, orig_h = original_size
+    target_w, target_h = target_size
+    
+    # Calculate scaling factors for letterboxing
+    scale_x = target_w / orig_w
+    scale_y = target_h / orig_h
+    scale = min(scale_x, scale_y)  # Letterboxing uses the smaller scale
+    
+    # Scale coordinates
+    scaled_x = original_coords[0] * scale
+    scaled_y = original_coords[1] * scale
+    
+    # Calculate padding offsets
+    new_w = orig_w * scale
+    new_h = orig_h * scale
+    offset_x = (target_w - new_w) / 2
+    offset_y = (target_h - new_h) / 2
+    
+    # Apply offsets
+    final_x = scaled_x + offset_x
+    final_y = scaled_y + offset_y
+    
+    return (final_x, final_y)
 
 def create_heatmap_mask(image_size, center, sigma=sigma_val):
     """
@@ -112,21 +150,52 @@ class ImageDataset(Dataset):
                 raise FileNotFoundError(f"Image doesn't exist at {img_path}")
 
             image = Image.open(img_path).convert("RGB")
-            if self.transform:
-                image = self.transform(image)  # expected shape: (3, H, W)
             
+            # Create heatmap mask BEFORE any transforms (using original image coordinates)
             if self.use_mask: 
-                _, H, W = image.shape
                 img_info = self.img_paths[img_idx]
+                orig_w, orig_h = img_info['width'], img_info['height']
                 backpack_coord = img_info.get("backpack_coord", None)
                 if backpack_coord is None:
-                    backpack_coord = (W / 2, H / 2)
+                    backpack_coord = (orig_w / 2, orig_h / 2)
                 else:
                     backpack_coord = (float(backpack_coord[0]), float(backpack_coord[1]))
 
-                mask = create_heatmap_mask((H, W), backpack_coord, sigma=self.mask_sigma)
-                mask = mask.unsqueeze(0)
-                image = torch.cat([image, mask], dim=0)
+                # Create mask using original image coordinates
+                mask = create_heatmap_mask((orig_h, orig_w), backpack_coord, sigma=self.mask_sigma)
+                mask = torch.tensor(mask, dtype=torch.float32).unsqueeze(0)  # (1, H, W)
+                
+                # Convert PIL image to tensor and add mask channel
+                image_tensor = transforms.ToTensor()(image)  # (3, H, W)
+                image_with_mask = torch.cat([image_tensor, mask], dim=0)  # (4, H, W)
+                
+                # Apply the same geometric transforms to both RGB and mask
+                rgb_tensor = image_with_mask[:3]
+                mask_tensor = image_with_mask[3:]
+                
+                # Convert to PIL for transforms
+                rgb_pil = transforms.ToPILImage()(rgb_tensor)
+                mask_pil = transforms.ToPILImage()(mask_tensor)
+                
+                # Apply letterboxing to both
+                rgb_letterboxed = letterbox(rgb_pil, size=(512, 512))
+                mask_letterboxed = letterbox(mask_pil, size=(512, 512))
+                
+                # Convert back to tensors
+                rgb_tensor = transforms.ToTensor()(rgb_letterboxed)
+                mask_tensor = transforms.ToTensor()(mask_letterboxed)
+                
+                # Apply normalization only to RGB
+                mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+                std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+                rgb_tensor = (rgb_tensor - mean) / std
+                
+                # Combine RGB and mask
+                image = torch.cat([rgb_tensor, mask_tensor], dim=0)
+            else:
+                # Apply transforms to image
+                if self.transform:
+                    image = self.transform(image)  # expected shape: (3, H, W)
 
             x, y, w, h = annotation['bbox']
             frame_id = extract_frame_id(file_name)
@@ -140,7 +209,7 @@ class ImageDataset(Dataset):
             }
         except Exception as e:
             print(f"Error processing item {idx}: {str(e)}")
-            # Return a default sample with zeros
+            # Default sample with zeros
             return {
                 'image': torch.zeros(4 if self.use_mask else 3, 224, 224),
                 'label': 0,
